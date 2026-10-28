@@ -1,0 +1,48 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "neverConnectToCloud": true,
+  "analytics": false,
+  "targetDefaults": {
+    "build": {
+      "cache": false
+    },
+    "test": {
+      "cache": false
+    }
+  },
+  "namedInputs": {
+    "browserBundle": [
+      "{projectRoot}/src/**/*",
+      "{projectRoot}/build_scripts/**/*",
+      "{projectRoot}/package.json",
+      "{projectRoot}/yarn.lock",
+      "{projectRoot}/.nvmrc",
+      "{projectRoot}/.npmrc",
+      "{projectRoot}/.eslintrc.json",
+      "{projectRoot}/.eslintignore",
+      "{projectRoot}/tsconfig.json",
+      "{projectRoot}/babel.config.js",
+      "{projectRoot}/postcss.config.js",
+      "{workspaceRoot}/scripts/browser.sh",
+      {
+        "runtime": "scripts/browser.sh --version"
+      },
+      {
+        "env": "BUILD_NUMBER"
+      },
+      {
+        "env": "GIT_HASH"
+      },
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "BROWSERSLIST_ENV"
+      },
+      {
+        "env": "BROWSERSLIST_IGNORE_OLD_DATA"
+      }
+    ]
+  }
+}

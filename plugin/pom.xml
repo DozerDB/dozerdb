@@ -1,0 +1,127 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+
+  <groupId>org.dozerdb</groupId>
+  <artifactId>dozerdb-plugin</artifactId>
+  <version>2026.10.0.0</version>
+  <packaging>jar</packaging>
+  <name>dozerdb-plugin</name>
+  <description>DozerDB Plugin for Neo4j Community.  This project builds the plugin using the proper dozerdb-core and dozerdb-browser versions.</description>
+
+  <organization>
+    <name>DozerDB Project</name>
+    <url>https://dozerdb.org</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:https://github.com/DozerDB/dozerdb.git</connection>
+    <developerConnection>scm:git:git@github.com:DozerDB/dozerdb.git</developerConnection>
+    <url>https://github.com/DozerDB/dozerdb</url>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>dozerdb</id>
+      <name>The DozerDB Team</name>
+      <url>https://dozerdb.org</url>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/DozerDB/dozerdb/issues</url>
+  </issueManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
+    <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
+    <!-- The dozer-db plugin version does not have to match the dozerdb-core version number because updates to the dozerdb-browser may cause a version bump. -->
+    <dozerdb-browser.version>2026.10.0.0</dozerdb-browser.version>
+    <dozerdb-core.version>2026.10.0-1.1.0</dozerdb-core.version>
+  </properties>
+
+
+  <build>
+
+
+    <finalName>${project.artifactId}-${project.version}</finalName>
+
+
+    <plugins>
+      <!-- Shade must never reuse its previous output as the next input JAR. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <forceCreation>true</forceCreation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <artifactSet>
+                <includes>
+                  <include>org.dozerdb:dozerdb-core</include>
+                  <include>org.dozerdb.client:dozerdb-browser</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+    </plugins>
+
+
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-core</artifactId>
+      <version>${dozerdb-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb.client</groupId>
+      <artifactId>dozerdb-browser</artifactId>
+      <version>${dozerdb-browser.version}</version>
+    </dependency>
+
+  </dependencies>
+
+</project>

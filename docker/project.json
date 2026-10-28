@@ -1,0 +1,39 @@
+{
+  "name": "docker",
+  "root": "docker",
+  "projectType": "application",
+  "implicitDependencies": [
+    "distribution"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": [
+        {
+          "projects": [
+            "distribution"
+          ],
+          "target": "build"
+        }
+      ],
+      "options": {
+        "command": "python3 scripts/docker-build.py",
+        "cwd": "."
+      },
+      "outputs": []
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ],
+      "options": {
+        "command": "python3 scripts/smoke.py docker",
+        "cwd": "."
+      },
+      "outputs": []
+    }
+  }
+}

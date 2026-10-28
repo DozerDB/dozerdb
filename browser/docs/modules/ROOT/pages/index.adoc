@@ -1,0 +1,54 @@
+:description: Neo4j Browser.
+
+[[browser]]
+= Neo4j Browser
+//https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/#keyboard-button-and-menu-macros
+:experimental:
+:sectnums:
+:chapter-label:
+:toc-title: Contents
+//:front-cover-image: image::title-page.png[]
+:header-title: NEO4J BROWSER
+:title-page-background-image: image::title-page.png[]
+
+ifndef::backend-pdf[]
+License: link:{common-license-page-uri}[Creative Commons 4.0]
+endif::[]
+
+//License page should be added at the end when generating pdf. (neo4j-manual-modeling-antora)
+ifdef::backend-pdf[]
+License: Creative Commons 4.0
+endif::[]
+
+[.lead]
+*Neo4j Browser*
+
+Neo4j Browser is a developer-focused tool that allows you to execute Cypher queries and visualize the results.
+It is the default developer interface for both Enterprise and Community editions of Neo4j.
+It comes out-of-the-box with all of Neo4j’s graph database offerings, including Neo4j Server (Community and Enterprise editions), Neo4j AuraDB (Neo4j's Database as a Service), and Neo4j Desktop (all OS versions).
+
+Neo4j Browser is suitable for running ad-hoc graph queries, with the appropriate ability to prototype a Neo4j-based application.
+
+Neo4j Browser is a tool for developers to interact with the graph, with the main focus on:
+
+* Writing and running graph queries with Cypher.
+* Exportable, tabular results of any query result.
+* Used for graph visualization of query results containing nodes and relationships.
+
+[.lead]
+*Contents of this manual*
+
+The following areas of Neo4j Browser are covered in this manual:
+
+* xref:about-browser.adoc[About Neo4j Browser] -- The purpose of Neo4j Browser and its high-level capabilities.
+* xref:deployment-modes/index.adoc[Deployment modes] -- The different deployment modes for running Neo4j Browser.
+* xref:visual-tour.adoc[Visual tour] -- A visual overview of the UI of Neo4j Browser.
+* xref:operations/index.adoc[Browser operations] -- How to administer and use Neo4j Browser.
+
+[.lead]
+_Who should read this?_
+
+This manual is written for developers, database administrators, quality engineers, data scientists, and data architects, who may or may not be familiar with Neo4j.
+
+// Edit at: https://github.com/neo4j-graphacademy/courses/blob/main/asciidoc/courses/cypher-fundamentals/promo.adoc
+include::https://raw.githubusercontent.com/neo4j-graphacademy/courses/main/asciidoc/courses/cypher-fundamentals/promo.adoc[]

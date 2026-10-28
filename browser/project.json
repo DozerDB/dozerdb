@@ -1,0 +1,72 @@
+{
+  "name": "browser",
+  "root": "browser",
+  "projectType": "application",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/browser.sh install --frozen-lockfile",
+        "cwd": "."
+      },
+      "outputs": []
+    },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "CI=true scripts/browser.sh build",
+        "cwd": "."
+      },
+      "dependsOn": [
+        "install"
+      ],
+      "inputs": [
+        "browserBundle"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/browser-jar.sh",
+        "cwd": "."
+      },
+      "dependsOn": [
+        "bundle"
+      ],
+      "outputs": [
+        "{projectRoot}/target"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "CI=true scripts/browser-test.sh",
+        "cwd": "."
+      },
+      "dependsOn": [
+        "install"
+      ],
+      "outputs": []
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "CI=true scripts/browser.sh start",
+        "cwd": "."
+      },
+      "dependsOn": [
+        "install"
+      ],
+      "continuous": true,
+      "outputs": []
+    }
+  }
+}

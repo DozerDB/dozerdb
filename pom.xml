@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.neo4j</groupId>
+    <artifactId>parent</artifactId>
+    <version>2026.10.0</version>
+  </parent>
+
+  <groupId>org.dozerdb</groupId>
+  <artifactId>dozerdb-core-parent</artifactId>
+  <version>2026.10.0-1.1.0</version>
+  <packaging>pom</packaging>
+  <name>dozerdb-core-parent</name>
+  <description>DozerDB Plugin Core for Neo4j</description>
+  <organization>
+    <name>DozerDB Project</name>
+    <url>https://dozerdb.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>dozerdb</id>
+      <name>The DozerDB Team</name>
+      <url>https://dozerdb.org</url>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>core</module>
+    <module>plugin</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:https://github.com/DozerDB/dozerdb.git</connection>
+    <developerConnection>scm:git:git@github.com:DozerDB/dozerdb.git</developerConnection>
+    <url>https://github.com/DozerDB/dozerdb</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/DozerDB/dozerdb/issues</url>
+  </issueManagement>
+  <properties>
+    <!-- Upstream fails on unused/undeclared dependencies; DozerDB declares the Neo4j modules it bootstraps. -->
+    <dependency.analyze.failOnWarning>false</dependency.analyze.failOnWarning>
+
+    <!-- We define the dozerdb-core.version here because we want to keep the main project version the same as the parent neo4j project version. -->
+    <dozerdb-core.version>2026.10.0-1.1.0</dozerdb-core.version>
+    <java.version>21</java.version>
+    <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
+    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <neo4j.version>2026.10.0</neo4j.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.neo4j</groupId>
+        <artifactId>annotations</artifactId>
+        <version>${neo4j.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+
+    <pluginManagement>
+
+      <plugins>
+        <!-- Neo4j's parent uses project.version; our artifact identity has a suffix. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <docletArtifact>
+              <groupId>org.neo4j</groupId>
+              <artifactId>annotations</artifactId>
+              <version>${neo4j.version}</version>
+            </docletArtifact>
+          </configuration>
+        </plugin>
+
+        <!-- Disable the maven-enforcer-plugin which tries to enforce the use of all org.neo4j packages -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>4.5</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <!-- Generates LICENSE.txt files -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>2.4.0</version>
+          <configuration />
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>update-project-license</id>
+              <goals>
+                <goal>update-project-license</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Licensing settings -->
+        <plugin>
+          <!-- Generates and validates NOTICE.txt and LICENSES.txt -->
+          <groupId>org.neo4j.build.plugins</groupId>
+          <artifactId>licensing-maven-plugin</artifactId>
+          <version>1.7.11</version>
+
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>list-all-licenses</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>compile</phase>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+      </plugins>
+
+    </pluginManagement>
+  </build>
+</project>

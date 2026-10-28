@@ -1,0 +1,66 @@
+--- a/packaging/standalone/standalone-community/pom.xml
++++ b/packaging/standalone/standalone-community/pom.xml
+@@ -53,8 +53,24 @@
+       <groupId>io.netty</groupId>
+       <artifactId>netty-tcnative</artifactId>
+       <classifier>osx-aarch_64</classifier>
++    </dependency>
++    <dependency>
++      <groupId>io.prometheus</groupId>
++      <artifactId>simpleclient</artifactId>
++      <version>0.16.0</version>
++    </dependency>
++    <!-- DozerDB standalone consumes core and Browser directly, never the shaded plugin. -->
++    <dependency>
++      <groupId>org.dozerdb</groupId>
++      <artifactId>dozerdb-core</artifactId>
++      <version>2026.10.0-1.1.0</version>
+     </dependency>
+     <dependency>
++      <groupId>org.dozerdb.client</groupId>
++      <artifactId>dozerdb-browser</artifactId>
++      <version>2026.10.0.0</version>
++    </dependency>
++    <dependency>
+       <groupId>org.neo4j</groupId>
+       <artifactId>neo4j-bootcheck</artifactId>
+       <version>${project.version}</version>
+@@ -193,7 +209,7 @@
+         <artifactId>maven-assembly-plugin</artifactId>
+         <configuration>
+           <attach>false</attach>
+-          <finalName>neo4j-community-${project.version}</finalName>
++          <finalName>dozerdb-${project.version}.0</finalName>
+           <appendAssemblyId>true</appendAssemblyId>
+           <outputDirectory>${project.parent.build.directory}</outputDirectory>
+           <delimiters>
+--- a/packaging/standalone/standalone-community/src/main/appassembler/unix-template
++++ b/packaging/standalone/standalone-community/src/main/appassembler/unix-template
+@@ -99,6 +99,9 @@
+   [ -n "$REPO" ] && REPO=`cygpath --path --windows "$REPO"`
+ fi
+ 
++# Bootstrap DozerDB before the upstream server implementation.
++CLASSPATH="$BASEDIR/lib/dozerdb-core-2026.10.0-1.1.0.jar:$CLASSPATH"
++
+ exec "$JAVACMD" @EXTRA_JVM_ARGUMENTS@ \
+   -classpath "$CLASSPATH" \
+   -Dapp.name="@APP_NAME@" \
+--- a/packaging/standalone/standalone-community/src/main/distribution/text/community/conf/neo4j.conf
++++ b/packaging/standalone/standalone-community/src/main/distribution/text/community/conf/neo4j.conf
+@@ -33,7 +33,7 @@
+ 
+ # Anonymous usage data reporting
+ # To disable, uncomment this line
+-#dbms.usage_report.enabled=false
++dbms.usage_report.enabled=false
+ 
+ #********************************************************************
+ # Memory Settings
+@@ -365,3 +365,6 @@
+ #********************************************************************
+ # Other Neo4j system properties
+ #********************************************************************
++
++# DozerDB database limit
++dbms.max_databases=100

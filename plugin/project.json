@@ -1,0 +1,43 @@
+{
+  "name": "plugin",
+  "root": "plugin",
+  "projectType": "library",
+  "implicitDependencies": [
+    "core",
+    "browser"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/maven.sh -pl plugin -am package -DskipTests",
+        "cwd": "."
+      },
+      "dependsOn": [
+        {
+          "projects": [
+            "core",
+            "browser"
+          ],
+          "target": "build"
+        }
+      ],
+      "outputs": [
+        "{projectRoot}/target"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/check-jars.py && python3 scripts/smoke.py plugin",
+        "cwd": "."
+      },
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": []
+    }
+  }
+}

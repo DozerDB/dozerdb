@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2019",
+    "strict": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react",
+    "outDir": "./build",
+    "noEmit": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "paths": {
+      "services/*": ["shared/services/*"],
+      "browser-services/*": ["browser/services/*"],
+      "browser-components/*": ["browser/components/*"],
+      "browser-hooks/*": ["browser/hooks/*"],
+      "browser-styles/*": ["browser/styles/*"],
+      "project-root/*": ["../*"],
+      "neo4j-arc/graph-visualization": ["neo4j-arc/graph-visualization"],
+      "neo4j-arc/common": ["neo4j-arc/common"],
+      "neo4j-arc/cypher-language-support": [
+        "neo4j-arc/cypher-language-support"
+      ],
+      "icons/*": ["browser/icons/*"]
+    }
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./src/neo4j-arc/dist*"]
+}

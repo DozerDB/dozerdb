@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`settings reducer handles REPLACE 1`] = `
+Object {
+  "allowCrashReports": false,
+  "allowUserStats": false,
+  "autoComplete": true,
+  "browserSyncDebugServer": null,
+  "codeFontLigatures": true,
+  "connectionTimeout": 30000,
+  "editorLint": false,
+  "enableMultiStatementMode": true,
+  "initCmd": ":play start",
+  "initialNodeDisplay": 300,
+  "maxFieldItems": 500,
+  "maxFrames": 15,
+  "maxHistory": 30,
+  "maxNeighbours": 100,
+  "maxRows": 1000,
+  "new": "conf",
+  "playImplicitInitCommands": true,
+  "scrollToTop": true,
+  "showPerformanceOverlay": false,
+  "showSampleScripts": true,
+  "showWheelZoomInfo": true,
+  "theme": "auto",
+  "useBoltRouting": false,
+  "useReadTransactions": false,
+}
+`;

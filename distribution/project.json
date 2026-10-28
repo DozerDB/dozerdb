@@ -1,0 +1,45 @@
+{
+  "name": "distribution",
+  "root": "distribution",
+  "projectType": "application",
+  "implicitDependencies": [
+    "core",
+    "browser",
+    "plugin"
+  ],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": [
+        {
+          "projects": [
+            "core",
+            "browser",
+            "plugin"
+          ],
+          "target": "build"
+        }
+      ],
+      "options": {
+        "command": "python3 scripts/distribution.py",
+        "cwd": "."
+      },
+      "outputs": [
+        "{projectRoot}/target"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ],
+      "options": {
+        "command": "python3 scripts/smoke.py distribution",
+        "cwd": "."
+      },
+      "outputs": []
+    }
+  }
+}
