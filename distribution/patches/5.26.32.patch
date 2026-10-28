@@ -1,0 +1,64 @@
+--- a/packaging/standalone/standalone-community/pom.xml
++++ b/packaging/standalone/standalone-community/pom.xml
+@@ -121,7 +121,7 @@
+                 <artifactId>maven-assembly-plugin</artifactId>
+                 <configuration>
+                     <attach>false</attach>
+-                    <finalName>neo4j-community-${project.version}</finalName>
++                    <finalName>dozerdb-${project.version}.0</finalName>
+                     <appendAssemblyId>true</appendAssemblyId>
+                     <outputDirectory>${project.parent.build.directory}</outputDirectory>
+                     <delimiters>
+@@ -200,6 +200,22 @@
+             <groupId>io.netty</groupId>
+             <artifactId>netty-tcnative</artifactId>
+             <classifier>osx-aarch_64</classifier>
++        </dependency>
++        <!-- DozerDB standalone consumes core and Browser directly, never the shaded plugin. -->
++        <dependency>
++            <groupId>org.dozerdb</groupId>
++            <artifactId>dozerdb-core</artifactId>
++            <version>5.26.32-1.1.0</version>
++        </dependency>
++        <dependency>
++            <groupId>org.dozerdb.client</groupId>
++            <artifactId>dozerdb-browser</artifactId>
++            <version>5.26.32.0</version>
++        </dependency>
++        <dependency>
++            <groupId>io.prometheus</groupId>
++            <artifactId>simpleclient</artifactId>
++            <version>0.16.0</version>
+         </dependency>
+         <dependency>
+             <groupId>org.neo4j</groupId>
+--- a/packaging/standalone/standalone-community/src/main/appassembler/unix-template
++++ b/packaging/standalone/standalone-community/src/main/appassembler/unix-template
+@@ -99,6 +99,9 @@
+   [ -n "$REPO" ] && REPO=`cygpath --path --windows "$REPO"`
+ fi
+ 
++# Bootstrap DozerDB before the upstream server implementation.
++CLASSPATH="$BASEDIR/lib/dozerdb-core-5.26.32-1.1.0.jar:$CLASSPATH"
++
+ exec "$JAVACMD" @EXTRA_JVM_ARGUMENTS@ \
+   -classpath "$CLASSPATH" \
+   -Dapp.name="@APP_NAME@" \
+--- a/packaging/standalone/standalone-community/src/main/distribution/text/community/conf/neo4j.conf
++++ b/packaging/standalone/standalone-community/src/main/distribution/text/community/conf/neo4j.conf
+@@ -28,7 +28,7 @@
+ 
+ # Anonymous usage data reporting
+ # To disable, uncomment this line
+-#dbms.usage_report.enabled=false
++dbms.usage_report.enabled=false
+ 
+ #********************************************************************
+ # Memory Settings
+@@ -348,3 +348,6 @@
+ #********************************************************************
+ # Other Neo4j system properties
+ #********************************************************************
++
++# DozerDB database limit
++dbms.max_databases=100

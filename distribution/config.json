@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/neo4j/neo4j.git",
+  "tag": "5.26.32",
+  "commit": "27f24499b751708815d42c8cf26bfb6597b3516c",
+  "neo4jVersion": "5.26.32",
+  "coreVersion": "5.26.32-1.1.0",
+  "browserVersion": "5.26.32.0",
+  "distributionVersion": "5.26.32.0",
+  "patch": "patches/5.26.32.patch",
+  "snapshotOccurrences": 170,
+  "pluginTestArchive": {
+    "url": "https://dist.neo4j.org/neo4j-community-5.26.32-unix.tar.gz",
+    "sha256": "d279ae6a9b38034280681a558b0cd222dce89f87cc3d9867f1f7bd28ef5ebc30"
+  }
+}

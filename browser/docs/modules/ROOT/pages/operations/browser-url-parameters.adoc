@@ -1,0 +1,140 @@
+:description: Neo4j Browser supports some URL parameters to be defined in the URL query component.
+
+
+[[browser-url-parameters]]
+= Browser URL parameters
+
+Neo4j Browser supports some URL parameters defined in the query component.
+The query component is preceded by a question mark (`?`) and contains a query string that is a sequence of key–value pairs separated by an ampersand (`&`).
+
+
+== Connection frame
+
+Pre-populate the connection frame with the connection URL and set the database.
+
+The syntax is:
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?dbms=[connectionURL]&db=[databaseName]
+----
+
+[source, browser URL, role=noheader, subs="macros"]
+----
++http://localhost:7474/browser?connectURL=[connectionURL]&db=[databaseName]+ label:deprecated[]
+----
+
+
+.Connection URL and database
+====
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?dbms=neo4j://alice@localhost:7687&db=neo4j123
+----
+This pre-populates the connection frame with:
+
+* Connect URL: `neo4j://localhost:7687`
+* Database: `neo4j123`
+* Username: `alice`
+====
+
+It is also possible to pre-populate the authorization method.
+
+The syntax is:
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?preselectAuthMethod=[NATIVE]|[SSO]|[NO_AUTH]
+----
+
+** `[NATIVE]` is the regular username and password and is the default setting.
+** `[SSO]` lets you sign in using SSO.
+** `[NO_AUTH]` means that no authorization is required.
+
+Additionally, it is also possible to automatically redirect to an SSO provider, as if a user clicked the corresponding SSO button in the UI with the `sso_redirect` url parameter.
+
+The syntax is:
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?sso_redirect=<idp_id>
+----
+
+The `idp_id` in the example is the `id` of the SSO provider.
+To ensure Browser finds the correct SSO providers, it's recommended to also pass the `connectURL`.
+
+
+== Pre-populate the editor
+
+Pre-populate the editor with a command when Neo4j Browser starts.
+Supported browser commands are:
+
+* `guide`
+* `param`
+* `params`
+* `play`
+
+The `:play` and `:guide` commands run automatically.
+
+The syntax is:
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?cmd=[command]&arg=[argument]
+----
+
+
+.Guide intro
+====
+[source, browser command, role=noheader]
+----
+:guide intro
+----
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?cmd=guide&arg=intro
+----
+====
+
+
+.Play movies
+====
+[source, browser command, role=noheader]
+----
+:play movies
+----
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?cmd=play&arg=movies
+----
+====
+
+
+.Param
+====
+[source, browser command, role=noheader]
+----
+:param example=>1
+----
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?cmd=param&arg=example=>1
+----
+====
+
+
+.Params
+====
+[source, browser command, role=noheader]
+----
+:params {example:1,foo:"bar"}
+----
+
+[source, browser URL, role=noheader]
+----
+http://localhost:7474/browser?cmd=params&arg={example:1,foo:"bar"}
+----
+====

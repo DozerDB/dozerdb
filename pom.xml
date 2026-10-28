@@ -1,0 +1,184 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+
+  <parent>
+    <groupId>org.neo4j</groupId>
+    <artifactId>parent</artifactId>
+    <version>5.26.32</version>
+  </parent>
+
+
+  <groupId>org.dozerdb</groupId>
+  <artifactId>dozerdb-core-parent</artifactId>
+  <version>5.26.32-1.1.0</version>
+  <packaging>pom</packaging>
+  <name>dozerdb-core-parent</name>
+  <description>DozerDB Plugin Core for Neo4j</description>
+  <properties>
+    <neo4j.version>5.26.32</neo4j.version>
+
+    <!-- We define the dozerdb-core.version here because we want to keep the main project version the same as the parent neo4j project version. -->
+    <dozerdb-core.version>5.26.32-1.1.0</dozerdb-core.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
+  </properties>
+  <organization>
+    <name>DozerDB Project</name>
+    <url>https://dozerdb.org</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:https://github.com/DozerDB/dozerdb.git</connection>
+    <developerConnection>scm:git:git@github.com:DozerDB/dozerdb.git</developerConnection>
+    <url>https://github.com/DozerDB/dozerdb</url>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>dozerdb</id>
+      <name>The DozerDB Team</name>
+      <url>https://dozerdb.org</url>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/DozerDB/dozerdb/issues</url>
+  </issueManagement>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.neo4j</groupId>
+        <artifactId>annotations</artifactId>
+        <version>${neo4j.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>core</module>
+    <module>plugin</module>
+  </modules>
+
+  <build>
+
+    <pluginManagement>
+
+
+      <plugins>
+        <!-- Neo4j's parent uses project.version; our artifact identity has a suffix. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <docletArtifact>
+              <groupId>org.neo4j</groupId>
+              <artifactId>annotations</artifactId>
+              <version>${neo4j.version}</version>
+            </docletArtifact>
+          </configuration>
+        </plugin>
+
+
+
+        <!-- Disable the maven-enforcer-plugin which tries to enforce the use of all org.neo4j packages -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>4.5</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <!-- Generates LICENSE.txt files -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>2.4.0</version>
+          <configuration>
+
+          </configuration>
+          <executions>
+            <execution>
+              <id>update-project-license</id>
+              <goals>
+                <goal>update-project-license</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- Licensing settings -->
+        <plugin>
+          <!-- Generates and validates NOTICE.txt and LICENSES.txt -->
+          <groupId>org.neo4j.build.plugins</groupId>
+          <artifactId>licensing-maven-plugin</artifactId>
+          <version>1.7.11</version>
+
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+          <executions>
+            <execution>
+              <id>list-all-licenses</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.neo4j.build</groupId>
+              <artifactId>resources</artifactId>
+              <version>${build-resources.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+
+      </plugins>
+
+    </pluginManagement>
+  </build>
+</project>

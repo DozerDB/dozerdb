@@ -1,0 +1,16 @@
+{
+  "name": "dozerdb-build",
+  "private": true,
+  "description": "Nx orchestration for native DozerDB builds",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test"
+  },
+  "devDependencies": {
+    "nx": "23.3.0",
+    "playwright": "1.58.2"
+  }
+}

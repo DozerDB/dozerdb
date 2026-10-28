@@ -1,0 +1,264 @@
+:description: This section list all the Browser commands.
+
+
+[appendix]
+[[reference-commands]]
+= Command reference
+
+The editor in Neo4j Browser understands a few client-side commands, which begin with a colon (`:`).
+
+
+[[browser-commands]]
+== Browser commands
+
+//neo4j-browser/src/browser/modules/Stream/Stream.tsx
+
+//Frames:
+
+//ErrorFrame
+//CypherFrame
+//CypherScriptFrame
+//UserList
+//UserAdd
+//ChangePasswordFrame - :server change-password
+//PreFrame
+//PlayFrame - :play
+//HistoryFrame - :history
+//ParamsFrame - :params
+//ConnectionFrame - :server connect
+//DisconnectFrame - :server disconnect
+//SchemaFrame - :schema
+//HelpFrame - :help
+//QueriesFrame - :queries
+//SysInfoFrame - :sysinfo
+//ServerStatusFrame - :server status
+//ServerSwitchFrame - :server switch ???
+//UseDbFrame - :use <databaseName>
+//DbsFrame - :dbs
+//StyleFrame - :style
+//DefaultFrame
+//SnakeFrame - Easter egg
+
+//const trans = {
+//  'cypher-script': CypherScriptFrame,
+//  'user-list': UserList,
+//  'user-add': UserAdd,
+//  'switch-success': ServerSwitchFrame,
+//  'switch-fail': ServerSwitchFrame,
+//}
+
+.List of commands
+[options="header",cols="3,7"]
+|===
+| Command | Description
+
+m| +:auto <Cypher query>+
+a|
+Send the Cypher query in an auto-commit transaction. +
+
+[NOTE]
+====
+In general, auto-committing transactions is not recommended because of the lack of support for retrying the Cypher query on errors.
+However, some query types need to be sent in auto-committing transactions, such as `CALL { ... } IN TRANSACTIONS`.
+====
+
+m| :clear
+a| Remove all frames from the stream.
+
+m| :config
+a| Show the configuration settings. 
+
+m| +:config <key-value>+
+a|
+Set one configuration setting. +
+The key-value can be specified as `"x": 1`, `'x': 1`, or `x: 1`.
+
+m| +:config {}+
+a| Reset the configuration settings to the default configuration.
+
+m| +:config {<key-value pairs>}+
+a|
+Reset the configuration settings to default and then set the key-value pairs. +
+The key-value pairs can be specified as `+{"x": 1, "y": 2}+`, `+{'x': 1, 'y': 2}+`, or `+{x: 1, y: 2}+`.
+
+m| :dbs
+a| Show databases available for the current user.
+
+m| +:delete <request>+
+a| REST command, send an HTTP DELETE request.
+
+m| +:get <request>+
+a| REST command, send an HTTP GET request.
+
+m| :guide
+a|
+Show the guide drawer.
+The guide drawer contains interactive Neo4j Browser guides for learning concepts and tools with Neo4j.
+
+m| +:guide <guide-name>+
+a|
+Show the guide drawer with a specific Neo4j Browser guide.
+The name can be specified with or without the Hyphen (`-`) character, e.g, `:guide movie-graph` or `:guide movie graph`.
+
+m| +:guide <URL>+
+a|
+Show the guide drawer with a custom Neo4j Browser guide from the specified URL.
+
+[NOTE]
+====
+There are also other Neo4j Browser guides created by Neo4j staff and community members to help others learn Neo4j or how to use the tools in its ecosystem.
+You can check out the currently published list on the link:https://portal.graphgist.org/graph_guides[GraphGist Portal (Graph Guides section)^]. +
+For more information on how to create a custom Browser guide, see link:https://neo4j.com/developer/guide-create-neo4j-browser-guide/[creating a custom Browser guide^].
+====
+
+m| :help
+a| Display help about topics and commands.
+
+m| +:head <request>+
+a| REST command, send an HTTP HEAD request.
+
+m| :history
+a| Display Neo4j Browser history of your executed commands.
+
+m| :history clear
+a| Remove all commands from Neo4j Browser history.
+
+m| +:put <request>+
+a| REST command, send an HTTP PUT request.
+
+m| :play
+a| Play Neo4j Browser guides.
+
+m| +:play <guide-name>+
+a|
+Play a specific Neo4j Browser guide.
+The name can be specified with or without the Hyphen (`-`) character, e.g, `:play movie-graph` or `:play movie graph`.
+
+m| +:play <URL>+
+a|
+Play a custom Neo4j Browser guide from the specified URL.
+
+[NOTE]
+====
+There are also other Neo4j Browser guides created by Neo4j staff and community members to help others learn Neo4j or how to use the tools in its ecosystem.
+You can check out the currently published list on the link:https://portal.graphgist.org/graph_guides[GraphGist Portal (Graph Guides section)^]. +
+For more information on how to create a custom Browser guide, see link:https://neo4j.com/developer/guide-create-neo4j-browser-guide/[creating a custom Browser guide^].
+====
+
+m| +:post <request>+
+a| REST command, send an HTTP POST request.
+
+m| +:param <key-value>+
+a|
+Set one parameter. +
+The key-value can be specified as `+"x" => 1+` or `+x => 1+`.
+
+m| :params
+a| Show all parameters.
+
+m| +:params {}+
+a| Remove all parameters.
+
+m| +:params {<key-value pairs>}+
+a|
+Remove all parameters and then set the parameters to the specified key-value pairs. +
+The key-value pairs can be specified as `+{"x": 1, "y": 2}+`, `+{'x': 1, 'y': 2}+`, or `+{x: 1, y: 2}+`.
+
+[NOTE]
+====
+Integers will be set as floats in this form.
+====
+
+m| :queries
+a| List your servers and clusters that are running queries.
+
+m| :style
+a| Show the current style configuration.
+
+m| +:style <CSS>+
+a|
+Modify the visual aspects of your graph. +
+CSS classes are overwritten with the new styling.
+
+m| :style reset
+a| Reset the style to the default styling.
+
+m| :server change-password
+a| Change password.
+
+m| :server connect
+a| Manage a connection to Neo4j.
+
+m| :server disconnect
+a| Disconnect the currently open connection to Neo4j.
+
+m| :server status
+a| Show metadata for the currently open connection.
+
+m| :schema
+a| Show information about database schema indexes and constraints.
+
+m| :sysinfo
+a| Show information about _Store Size_, _Id Allocation_, _Page Cache_, _Transactions_, and _Databases_.
+
+m| +:use <database>+
+a|
+Set the database to query by default (the default database is set to `neo4j`).
+
+[NOTE]
+====
+You can also use Cypher, `+USE <database> ...+`, to specify a database.
+====
+
+//m| :snake
+//a| Play snake. Easter egg.
+
+|===
+
+
+[[help-commands]]
+== Help commands
+
+List of help commands available.
+
+* `:help bolt`
+* `:help bolt-encryption`
+* `:help bolt-routing`
+* `:help clear`
+* `:help commands`
+* `:help contains`
+* `:help create`
+* `:help create-index`
+* `:help create-unique`
+* `:help cypher`
+* `:help delete`
+* `:help detach-delete`
+* `:help ends-with`
+* `:help explain`
+* `:help foreach`
+* `:help history`
+* `:help history clear`
+* `:help keys`
+* `:help load csv`
+* `:help match`
+* `:help merge`
+* `:help param`
+* `:help params`
+* `:help play`
+* `:help profile`
+* `:help queries`
+* `:help rest`
+* `:help rest-delete`
+* `:help rest-get`
+* `:help rest-post`
+* `:help rest-put`
+* `:help return`
+* `:help server`
+* `:help server-user`
+* `:help set`
+* `:help start`
+* `:help starts-with`
+* `:help unwind`
+* `:help where`
+* `:help with`
+

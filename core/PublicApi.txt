@@ -1,0 +1,3 @@
+org.neo4j.configuration.DozerDbSettings public class extends java.lang.Object implements org.neo4j.configuration.SettingsDeclaration
+org.neo4j.configuration.DozerDbSettings::DozerDbSettings() void public
+org.neo4j.configuration.DozerDbSettings::max_databases org.neo4j.graphdb.config.Setting<java.lang.Integer> public static final
