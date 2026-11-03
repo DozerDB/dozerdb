@@ -1,3 +1,4 @@
+# Adapted from docker-image-src/common/utilities.sh of Neo4j's Docker image, https://github.com/neo4j/docker-neo4j.
 
 function running_as_root
 {

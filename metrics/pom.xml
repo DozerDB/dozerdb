@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.dozerdb</groupId>
+    <artifactId>dozerdb-core-parent</artifactId>
+    <version>5.26.32-1.1.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>dozerdb-metrics</artifactId>
+  <version>5.26.32-1.1.0</version>
+  <packaging>jar</packaging>
+
+  <name>DozerDB Metrics</name>
+  <description>Neo4j-compatible metrics for DozerDB: settings, registry, collectors and exporters, activated as a global Neo4j extension.</description>
+
+  <properties>
+    <moduleName>org.dozerdb.metrics</moduleName>
+    <!-- The Prometheus Dropwizard bridge is the reference of the exposition equality test (test scope only); the Neo4j parent manages no version for it. -->
+    <prometheus-simpleclient.version>0.16.0</prometheus-simpleclient.version>
+  </properties>
+
+  <dependencies>
+    <!-- Dropwizard Metrics: versions are managed by the Neo4j parent POM (metrics.version), which also excludes the
+         RabbitMQ client from metrics-graphite; only the plaintext TCP sender is used, so nothing beyond
+         com.codahale.metrics.graphite is pulled in. -->
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-graphite</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.rabbitmq</groupId>
+          <artifactId>amqp-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
+    </dependency>
+
+    <!-- Neo4j is the host: every Neo4j artifact is provided by the server at runtime. -->
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>${junit.platform.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-commons</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>annotations</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- The Bolt monitor interfaces (BoltConnectionMetricsMonitor, BoltDriverMetricsMonitor) the adapter implements. -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-bolt</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-dbms</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- The web server's thread pool interface (WebContainerThreadInfo) for the server thread metrics; Neo4j's lib/ has it. -->
+    <dependency>
+      <groupId>org.neo4j.app</groupId>
+      <artifactId>neo4j-server</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Dropwizard logs through slf4j; Neo4j's lib/ provides it, so it is never shaded into the artifact. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Tests start a real DozerDB in-process through core's test builder (org.neo4j.harness.DozerDbBuilders). -->
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_common</artifactId>
+      <version>${prometheus-simpleclient.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_dropwizard</artifactId>
+      <version>${prometheus-simpleclient.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-core</artifactId>
+      <version>${dozerdb-core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-core</artifactId>
+      <version>${dozerdb-core.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-engine</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-testkit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- The Neo4j Java driver (Apache 2.0; version managed by the Neo4j parent) opens real Bolt connections in the
+         Bolt metrics tests and sends the telemetry the driver metrics count. -->
+    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j.test</groupId>
+      <artifactId>neo4j-harness</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- The Neo4j parent copies README* from the module directory into META-INF of every JAR. The module's README is a
+         maintainer document, not part of the artifact, so the parent's resources are declared again without it. -->
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <directory>${basedir}/src/main/resources/META-INF/</directory>
+      </resource>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>COPYRIGHT.txt</include>
+          <include>LICENSE.txt</include>
+          <include>ThirdPartyLicenses.txt</include>
+          <include>CHANGES.txt</include>
+        </includes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <targetPath>META-INF</targetPath>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>COPYRIGHT.txt</include>
+          <include>LICENSE.txt</include>
+          <include>ThirdPartyLicenses.txt</include>
+          <include>CHANGES.txt</include>
+        </includes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <!-- One artifact for both delivery forms, the plugin and the distribution: Dropwizard Metrics travels inside this JAR with every
+           com.codahale.metrics class relocated under org.dozerdb.metrics.shaded, so stock Neo4j needs no extra library and
+           no library class keeps its original name. Sources and unit tests compile against the original packages; the
+           shaded JAR replaces the module artifact at package, which is what failsafe tests and install publishes. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>relocate-dropwizard-metrics</id>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>io.dropwizard.metrics:*</include>
+                </includes>
+              </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>com.codahale.metrics</pattern>
+                  <shadedPattern>org.dozerdb.metrics.shaded.com.codahale.metrics</shadedPattern>
+                </relocation>
+              </relocations>
+              <filters>
+                <filter>
+                  <artifact>io.dropwizard.metrics:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- ShadedArtifactIT checks that the third-party notice names the Dropwizard version the Neo4j parent manages. -->
+            <dropwizard.version>${metrics.version}</dropwizard.version>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

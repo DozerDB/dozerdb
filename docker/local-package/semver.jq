@@ -1,3 +1,5 @@
+# Adapted from docker-image-src/common/semver.jq of Neo4j's Docker image, https://github.com/neo4j/docker-neo4j.
+
 def _semver_obj2obj($req):
   if   . == $req  then true
   elif .major != $req.major and .major != "x" and .major != "*" then false

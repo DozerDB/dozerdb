@@ -1,0 +1,57 @@
+# The release gate's stack: the DozerDB image under test, a Prometheus scraping it and a Graphite receiving
+# from it, the way an administrator deploys monitoring. scripts/release-gate.py starts it as its own Compose
+# project per run and removes it with its volumes afterwards; `python3 scripts/release-gate.py --hold` leaves
+# it running for a look by hand. Every variable below is set by the gate (stack_environment), so the host
+# ports are free ones and never collide with a server already running.
+#
+# The metrics profile and STACK_METRICS belong together: with the stack-metrics check on, the gate sets
+# STACK_METRICS=on and adds the profile; with it off (a line that does not emit metrics yet) every metrics
+# variable below is empty, the image's entrypoint writes no setting for an empty NEO4J_* variable, and
+# Prometheus and Graphite do not start.
+services:
+  dozerdb:
+    image: ${DOZERDB_IMAGE:?set by scripts/release-gate.py}
+    ports:
+      - "127.0.0.1:${DOZERDB_HTTP_PORT:?set by scripts/release-gate.py}:7474"
+      - "127.0.0.1:${DOZERDB_BOLT_PORT:?set by scripts/release-gate.py}:7687"
+    environment:
+      NEO4J_AUTH: neo4j/${DOZERDB_PASSWORD:?set by scripts/release-gate.py}
+      # The Browser connects to the Bolt address the server advertises: the published host port.
+      NEO4J_server_bolt_advertised__address: 127.0.0.1:${DOZERDB_BOLT_PORT}
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 128m
+      # Every metric, not only the default filter's.
+      NEO4J_server_metrics_filter: ${STACK_METRICS:+*}
+      NEO4J_server_metrics_prometheus_enabled: ${STACK_METRICS:+true}
+      NEO4J_server_metrics_prometheus_endpoint: ${STACK_METRICS:+0.0.0.0:2004}
+      NEO4J_server_metrics_graphite_enabled: ${STACK_METRICS:+true}
+      NEO4J_server_metrics_graphite_server: ${STACK_METRICS:+graphite:2003}
+      NEO4J_server_metrics_graphite_interval: ${STACK_METRICS:+5s}
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    profiles: [metrics]
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:?set by scripts/release-gate.py}:9090"
+    configs:
+      - source: prometheus
+        target: /etc/prometheus/prometheus.yml
+  graphite:
+    image: graphiteapp/graphite-statsd:1.1.10-5
+    profiles: [metrics]
+    ports:
+      # Graphite web and its APIs. Carbon creates at most 50 new series a minute, so with every metric on the
+      # tree under neo4j. fills over several minutes.
+      - "127.0.0.1:${GRAPHITE_PORT:?set by scripts/release-gate.py}:80"
+configs:
+  prometheus:
+    # Inline, so no file sharing setting of the Docker host matters. Job neo4j, as the dashboards expect.
+    content: |
+      global:
+        scrape_interval: 2s
+        scrape_timeout: 2s
+        evaluation_interval: 2s
+      scrape_configs:
+        - job_name: neo4j
+          static_configs:
+            - targets: ["dozerdb:2004"]

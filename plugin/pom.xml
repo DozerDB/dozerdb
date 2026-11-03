@@ -7,7 +7,7 @@
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-plugin</artifactId>
-  <version>5.26.32.0</version>
+  <version>5.26.32.1</version>
   <packaging>jar</packaging>
   <name>dozerdb-plugin</name>
   <description>DozerDB Plugin for Neo4j Community.  This project builds the plugin using the proper dozerdb-core and dozerdb-browser versions.</description>
@@ -50,8 +50,9 @@
     <maven.compiler.release>17</maven.compiler.release>
     <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
     <!-- The dozer-db plugin version does not have to match the dozerdb-core version number because updates to the dozerdb-browser may cause a version bump. -->
-    <dozerdb-browser.version>5.26.32.0</dozerdb-browser.version>
+    <dozerdb-browser.version>5.26.32.1</dozerdb-browser.version>
     <dozerdb-core.version>5.26.32-1.1.0</dozerdb-core.version>
+    <dozerdb-metrics.version>5.26.32-1.1.0</dozerdb-metrics.version>
   </properties>
 
 
@@ -83,9 +84,11 @@
             </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <!-- The metrics artifact already carries Dropwizard Metrics relocated, so no further relocation here. -->
               <artifactSet>
                 <includes>
                   <include>org.dozerdb:dozerdb-core</include>
+                  <include>org.dozerdb:dozerdb-metrics</include>
                   <include>org.dozerdb.client:dozerdb-browser</include>
                 </includes>
               </artifactSet>
@@ -98,7 +101,22 @@
                     <exclude>META-INF/*.RSA</exclude>
                   </excludes>
                 </filter>
+                <!-- The Neo4j parent gives every module a README, public API record and licence at the same META-INF
+                     names; the plugin keeps core's copies. scripts/check-jars.py asserts exactly this. -->
+                <filter>
+                  <artifact>org.dozerdb:dozerdb-metrics</artifact>
+                  <excludes>
+                    <exclude>META-INF/README.md</exclude>
+                    <exclude>META-INF/PublicApi.txt</exclude>
+                    <exclude>META-INF/LICENSE.txt</exclude>
+                    <exclude>LICENSE.txt</exclude>
+                  </excludes>
+                </filter>
               </filters>
+              <transformers>
+                <!-- Core and metrics both declare org.neo4j.configuration.SettingsDeclaration providers. -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -115,6 +133,11 @@
       <groupId>org.dozerdb</groupId>
       <artifactId>dozerdb-core</artifactId>
       <version>${dozerdb-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-metrics</artifactId>
+      <version>${dozerdb-metrics.version}</version>
     </dependency>
     <dependency>
       <groupId>org.dozerdb.client</groupId>

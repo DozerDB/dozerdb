@@ -5,7 +5,7 @@
                  <configuration>
                      <attach>false</attach>
 -                    <finalName>neo4j-community-${project.version}</finalName>
-+                    <finalName>dozerdb-${project.version}.0</finalName>
++                    <finalName>dozerdb-${project.version}.1</finalName>
                      <appendAssemblyId>true</appendAssemblyId>
                      <outputDirectory>${project.parent.build.directory}</outputDirectory>
                      <delimiters>
@@ -23,7 +23,7 @@
 +        <dependency>
 +            <groupId>org.dozerdb.client</groupId>
 +            <artifactId>dozerdb-browser</artifactId>
-+            <version>5.26.32.0</version>
++            <version>5.26.32.1</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>io.prometheus</groupId>

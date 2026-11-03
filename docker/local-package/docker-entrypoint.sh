@@ -1,5 +1,9 @@
 #!/bin/bash -eu
 
+# Adapted from docker-image-src/calver/coredb/docker-entrypoint.sh of Neo4j's Docker image, https://github.com/neo4j/docker-neo4j.
+# DozerDB removes the Enterprise licence-agreement check (DozerDB runs on Neo4j Community only) and prepares
+# /metrics for every edition.
+
 cmd="$1"
 
 # load useful utility functions
@@ -425,46 +429,6 @@ for variable_name in $(printenv | awk -F= '{print $1}'); do
   fi
 done
 
-# ==== CHECK LICENSE AGREEMENT ====
-
-# Only prompt for license agreement if command contains "neo4j" in it
-if [[ "${cmd}" == *"neo4j"* ]]; then
-  if [ "${NEO4J_EDITION}" == "enterprise" ]; then
-    : ${NEO4J_ACCEPT_LICENSE_AGREEMENT:="not accepted"}
-    if [[ "$NEO4J_ACCEPT_LICENSE_AGREEMENT" != "yes" && "$NEO4J_ACCEPT_LICENSE_AGREEMENT" != "eval" ]]; then
-      echo >&2 "
-In order to use Neo4j Enterprise Edition you must accept the license agreement.
-
-The license agreement is available at https://neo4j.com/terms/licensing/
-If you have a support contract the following terms apply https://neo4j.com/terms/support-terms/
-
-If you do not have a commercial license and want to evaluate the Software
-please read the terms of the evaluation agreement before you accept.
-https://neo4j.com/terms/enterprise_us/
-
-(c) Neo4j Sweden AB. All Rights Reserved.
-Use of this Software without a proper commercial license, or evaluation license
-with Neo4j, Inc. or its affiliates is prohibited.
-Neo4j has the right to terminate your usage if you are not compliant.
-
-More information is also available at: https://neo4j.com/licensing/
-If you have further inquiries about licensing, please contact us via https://neo4j.com/contact-us/
-
-To accept the commercial license agreement set the environment variable
-NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-
-To accept the terms of the evaluation agreement set the environment variable
-NEO4J_ACCEPT_LICENSE_AGREEMENT=eval
-
-To do this you can use the following docker argument:
-
-        --env=NEO4J_ACCEPT_LICENSE_AGREEMENT=<yes|eval>
-"
-      exit 1
-    fi
-  fi
-fi
-
 # NEO4JLABS_PLUGINS has been renamed to NEO4J_PLUGINS, but we want the old name to work for now.
 if [ -n "${NEO4JLABS_PLUGINS:-}" ];
 then
@@ -505,12 +469,11 @@ if [ -d /import ]; then
 fi
 
 if [ -d /metrics ]; then
-    # metrics is enterprise only
-    if [ "${NEO4J_EDITION}" == "enterprise" ];
-    then
-        check_mounted_folder_writable_with_chown "/metrics"
-        : ${NEO4J_server_directories_metrics:="/metrics"}
-    fi
+    # DozerDB's metrics are not edition-gated (Neo4j's image prepares /metrics for Enterprise only). The image
+    # creates /metrics and the CSV exporter writes there by default, whether it is the container's own directory,
+    # a volume or a bind mount, so it is made writable for the server's user like /data and /logs.
+    check_mounted_folder_writable_with_chown "/metrics"
+    : ${NEO4J_server_directories_metrics:="/metrics"}
 fi
 
 if [ -d /logs ]; then

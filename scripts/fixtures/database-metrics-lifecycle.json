@@ -1,0 +1,50 @@
+{
+ "description": "What a monitoring administrator sees in Prometheus while a flow takes one database through its lifecycle. The flows that assert it read this one file (scripts/cypher-flow.py and scripts/browser-flow.mjs with --prometheus), so they check the same thing and hold no PromQL of their own; a new expectation is added here once. `steps` are the points at which a flow checks, in the order it reaches them, each with `when` it reaches it; a flow refuses a file whose step names or order differ from its own. A step may have no assertion of its own and serve only as the `since` of a later one. `assertions` are checked at their `step`, in file order. `query` is instant PromQL (GET /api/v1/query) in which every ${database} is replaced by the flow's database name in the form DozerDB's Prometheus names carry it: every character outside [A-Za-z0-9:] replaced by _, so the result needs no escaping inside a regular expression. `expect` is the outcome the answer must reach: `present`, at least one series; `absent`, no series; `increased`, the sum of the sample values greater than the sum the same query returned at the earlier step named in `since` (a value that is not a number never counts as increased). At the `since` step, after that step's own assertions, the flow records that sum from a scrape made after it reached the step: it reads Prometheus's time() and waits until timestamp() of every series of the query is later, so whatever happened before the step (the schema commits, for `written`) is in the baseline and only what follows the step can count as the increase. Each outcome is polled every half scrape interval and must be reached within `timeout_scrape_intervals` scrape intervals, the interval being the longest scrapeInterval of the Prometheus's active targets; a query Prometheus rejects (errorType bad_data) fails at once, any other error is retried until the bound. A failure names the step, the query and what Prometheus returned. `description` says what the assertion means. A database whose name extends the flow's with an underscore would match the regular expressions too; the flows use their own database names.",
+ "timeout_scrape_intervals": 15,
+ "steps": [
+  {
+   "name": "created",
+   "when": "after CREATE DATABASE, once the database answers queries"
+  },
+  {
+   "name": "constrained",
+   "when": "after the flow's schema statements (its constraints) in the database, right before its data writes"
+  },
+  {
+   "name": "written",
+   "when": "after the flow's data writes, those it expects to be accepted and those it expects to be rejected"
+  },
+  {
+   "name": "dropped",
+   "when": "after DROP DATABASE, once the database is gone"
+  }
+ ],
+ "assertions": [
+  {
+   "step": "created",
+   "expect": "present",
+   "query": "{__name__=~\"neo4j_database_${database}_.+\"}",
+   "description": "the new database's metrics are scraped"
+  },
+  {
+   "step": "written",
+   "expect": "increased",
+   "since": "constrained",
+   "query": "neo4j_database_${database}_transaction_committed_write_total",
+   "description": "the database's committed write-transaction counter rose with the data writes (reads and rejected writes do not count; the schema statements do, hence the baseline after them)"
+  },
+  {
+   "step": "written",
+   "expect": "increased",
+   "since": "constrained",
+   "query": "neo4j_database_${database}_neo4j_count_node",
+   "description": "the database's node count rose: the accepted data writes are stored (a rejected write adds no node, though the token it creates for a new label or property key commits a write transaction of its own)"
+  },
+  {
+   "step": "dropped",
+   "expect": "absent",
+   "query": "{__name__=~\"neo4j_database_${database}_.+\"}",
+   "description": "no series of the dropped database remains"
+  }
+ ]
+}

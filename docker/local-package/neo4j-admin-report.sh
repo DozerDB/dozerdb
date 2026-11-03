@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Adapted from docker-image-src/calver/coredb/neo4j-admin-report.sh of Neo4j's Docker image, https://github.com/neo4j/docker-neo4j.
+
 # load useful utility functions
 . /startup/utilities.sh
 

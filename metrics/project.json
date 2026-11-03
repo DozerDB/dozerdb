@@ -1,0 +1,49 @@
+{
+  "name": "metrics",
+  "root": "metrics",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/maven.sh -pl metrics -am install -DskipTests",
+        "cwd": "."
+      },
+      "outputs": [
+        "{projectRoot}/target"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/maven.sh -pl metrics -am verify",
+        "cwd": "."
+      },
+      "outputs": [
+        "{projectRoot}/target/surefire-reports",
+        "{projectRoot}/target/failsafe-reports"
+      ],
+      "dependsOn": [
+        "docs-check"
+      ]
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/metrics-docs.py",
+        "cwd": "."
+      }
+    },
+    "docs-check": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/metrics-docs.py --check",
+        "cwd": "."
+      }
+    }
+  }
+}

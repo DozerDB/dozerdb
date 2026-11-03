@@ -4,6 +4,7 @@
   "projectType": "application",
   "implicitDependencies": [
     "core",
+    "metrics",
     "browser",
     "plugin"
   ],
@@ -15,6 +16,7 @@
         {
           "projects": [
             "core",
+            "metrics",
             "browser",
             "plugin"
           ],

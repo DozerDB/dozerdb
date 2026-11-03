@@ -73,6 +73,7 @@
 
   <modules>
     <module>core</module>
+    <module>metrics</module>
     <module>plugin</module>
   </modules>
 

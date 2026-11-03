@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Check that a DozerDB Docker image installs and runs APOC and Open GDS from NEO4J_PLUGINS.
 
-Usage: python3 scripts/docker-plugins.py --image graphstack/dozerdb:2026.10.0.0
+Usage: python3 scripts/docker-plugins.py [--image graphstack/dozerdb:2026.10.0.0]
        [--gds-version 2026.10.0] [--apoc-version 2026.10.1]
+
+The image is the line's latest local build (local_image in release-line.toml) unless --image names another,
+such as the published image after the push.
 
 Starts the image once with NEO4J_PLUGINS='["apoc", "open-gds"]' and once with
 the alias '["graph-data-science"]'. For each container the script checks that the
@@ -17,6 +20,7 @@ import json
 import subprocess
 import sys
 
+import release_line
 import smoke
 
 RUNS = (['apoc', 'open-gds'], ['graph-data-science'])
@@ -75,11 +79,12 @@ def run(image, plugins, gds_version=None, apoc_version=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--image', required=True)
+    parser.add_argument('--image', help="the image to check (default: the line manifest's local_image)")
     parser.add_argument('--gds-version', help='Expected gds.version()')
     parser.add_argument('--apoc-version', help='Expected apoc.version()')
     args = parser.parse_args()
-    failures = sum((run(args.image, plugins, args.gds_version, args.apoc_version) for plugins in RUNS), [])
+    image = release_line.default_image(args.image)
+    failures = sum((run(image, plugins, args.gds_version, args.apoc_version) for plugins in RUNS), [])
     print('RESULT', 'PASS' if not failures else f'FAIL ({len(failures)} checks)')
     return 1 if failures else 0
 

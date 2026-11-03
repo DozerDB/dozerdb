@@ -74,6 +74,15 @@
         <configuration>
           <finalName>dozerdb-core-${dozerdb-core.version}</finalName>
         </configuration>
+        <executions>
+          <!-- The test JAR carries the in-process DozerDB builder (org.neo4j.harness.DozerDbBuilders) for other modules' tests. -->
+          <execution>
+            <id>test-jar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

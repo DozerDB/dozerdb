@@ -1,8 +1,9 @@
 # Building DozerDB
 
 The repository holds every component of a release: `core` (the Neo4j
-integration), `browser` (DozerDB Browser), `plugin` (the shaded plugin JAR),
-`distribution` (the standalone archives) and `docker`. Each keeps its native
+integration), `metrics` (the metrics settings, collectors and exporters), `browser`
+(DozerDB Browser), `plugin` (the shaded plugin JAR), `distribution` (the standalone
+archives) and `docker`. Each keeps its native
 build tool; Nx orchestrates the hand-offs between them.
 
 ## Toolchain
@@ -38,7 +39,7 @@ npx nx build core           # core and its parent POM
 npx nx build browser        # Browser bundle and JAR
 npx nx build plugin         # shaded plugin JAR
 npx nx build distribution   # standalone archives and the release bundle
-npx nx build docker         # local image dozerdb:local from the Unix archive
+npx nx build docker         # local image from the Unix archive, see below
 npx nx run-many -t build    # everything
 ```
 
@@ -59,18 +60,23 @@ python3 scripts/docker-build.py
 on, the component versions and the packaging patch. `scripts/distribution.py`
 exports that exact upstream commit (cloning it into `.build/neo4j-git`, or
 reading an existing Neo4j clone named by `NEO4J_SOURCE_REPOSITORY`), applies the
-patch, runs Neo4j's own standalone assembly with DozerDB's core and Browser, and
-leaves the release bundle in `distribution/target/`:
+patch, runs Neo4j's own standalone assembly with DozerDB's core and Browser, adds
+the metrics JAR to `lib/` and `DOZERDB-NOTICE.txt` (the third-party notice for the
+libraries DozerDB adds) to both archives, and leaves the release bundle in
+`distribution/target/`:
 
 | File | Content |
 | --- | --- |
 | `dozerdb-<version>-unix.tar.gz` | Standalone server for Linux and macOS |
 | `dozerdb-<version>-windows.zip` | Standalone server for Windows (checked statically) |
-| `dozerdb-plugin-<version>.jar` | Shaded core plus Browser for a stock Neo4j `lib/` |
+| `dozerdb-plugin-<version>.jar` | Shaded core, metrics and Browser for a stock Neo4j `lib/` |
 
 Each file has a `.sha256` sidecar. `scripts/docker-build.py` builds the image
-from the Unix archive; `--platform`, repeatable `--tag` and `--push` produce
-multi-platform images for a registry.
+from the Unix archive and tags it `dozerdb:<version>-local` and with the
+`local_image` of `release-line.toml`, the latest local build of the release line
+(`dozerdb:calendar-local` or `dozerdb:lts-local`); the Docker smoke test uses that
+tag. `--platform`, repeatable `--tag` and `--push` produce multi-platform images
+for a registry.
 
 ## Test and verify
 
@@ -86,7 +92,12 @@ python3 scripts/smoke.py docker
 The smoke tests start the packaged server in a scratch directory under
 `.build/`, check authentication, create two databases, create constraints, verify
 that violating writes are rejected, restart the server and confirm the data is
-still there.
+still there. They also check the metrics: CSV files appear in the metrics
+directory with the default settings, the heap gauge is readable over
+`dbms.queryJmx`, and the Prometheus endpoint, enabled for the run, serves it.
+In Docker the metrics directory is the container's `/metrics` and the Prometheus
+settings reach the container as `NEO4J_server_metrics_*` variables with the
+endpoint port published.
 
 Two further flows exercise a running server the way a user does. Hold a server
 with `python3 scripts/smoke.py distribution --hold` (or `plugin` or `docker`);
@@ -96,12 +107,30 @@ it prints the Browser URL, the Bolt URL and the password. Then:
   replays `scripts/fixtures/constraints-test.cypher` checking every `SHOULD
   FAIL` and `SHOULD PASS` marker, stops and starts the database (checking both
   `requestedStatus` and `currentStatus` in `SHOW DATABASES`, with data
-  retained) and drops it. It must print `RESULT PASS`.
+  retained) and drops it. It must print `RESULT PASS`. With `--prometheus
+  <url>` of a Prometheus that scrapes the server, it also checks there that the
+  new database's metrics appear, that its committed write-transaction counter
+  and its node count rise with the data writes (measured from after the
+  constraints, which the flow creates first) and that none of its series
+  remain after the drop, as
+  `scripts/fixtures/database-metrics-lifecycle.json` lists them.
 - `node scripts/browser-flow.mjs <http-origin> <password>` drives DozerDB
   Browser in Playwright's Chromium: log in over Bolt, confirm the DozerDB
   badge, create a database, create the constraint kinds, see violating writes
   rejected, stop, start and drop the database. It must print `RESULT PASS` and
-  leaves screenshots and a transcript in `.build/logs/browser-flow/`.
+  leaves screenshots and a transcript in `.build/logs/browser-flow/`. With
+  `--prometheus <url>` it makes the same Prometheus checks as the Cypher flow,
+  from the same fixture, while the Browser drives the database, and it opens
+  `:sysinfo` in the editor and requires a number in every Store Size, Page Cache
+  and Transactions cell of the frame, whose screenshot joins the others.
+
+The monitoring pages under `docs/monitoring/` are partly generated from the metric
+inventory (`metrics/src/main/resources/org/dozerdb/metrics/inventory/metrics-inventory.tsv`)
+and the metrics settings declaration. `python3 scripts/metrics-docs.py` (or `npx nx
+run metrics:docs`) rewrites the generated parts after either changes; `python3
+scripts/metrics-docs.py --check` (`npx nx run metrics:docs-check`, which `npx nx run
+metrics:test` runs first) fails when a page is stale, and so does `python3 -m
+unittest discover -s scripts/tests`.
 
 `scripts/check-rebuild.sh` is a packaging regression check: it proves that a
 removed Browser asset disappears from both the Browser and the plugin JAR on an
