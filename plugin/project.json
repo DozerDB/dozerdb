@@ -4,6 +4,7 @@
   "projectType": "library",
   "implicitDependencies": [
     "core",
+    "metrics",
     "browser"
   ],
   "targets": {
@@ -18,6 +19,7 @@
         {
           "projects": [
             "core",
+            "metrics",
             "browser"
           ],
           "target": "build"

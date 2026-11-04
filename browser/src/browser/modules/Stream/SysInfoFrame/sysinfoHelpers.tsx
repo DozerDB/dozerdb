@@ -33,17 +33,20 @@ It's used through the `dbms.queryJmx(<searchprefix>=<metric_name>)` where the se
 - What `metrics.prefix` is set to in neo4j.conf (default is neo4j)
 - If `metrics.namespaces.enabled` is true of false in neo4j.conf (this setting was introduced when multidb was added)
 
-An example using the `store.size.total` metric with the following config:
+An example using the `store.size.full` metric with the following config:
 - which is a "database" metric,
-- with namespaces.enabled=false,
+- with namespaces.enabled=true (always the case since Neo4j 5, where the setting is gone),
 - against a database called foo and
-- metrics.prefix=abc
+- server.metrics.prefix=abc
 
 The metric name will be :
-abc.foo.store.size.total
+abc.database.foo.store.size.full
 
 And the full query:
-CALL dbms.queryJmx("abc.metrics:name=abc.foo.store.size.total")
+CALL dbms.queryJmx("abc.metrics:name=abc.database.foo.store.size.full")
+
+`store.size.full` (store files and transaction logs) is the name Neo4j 2025.01 gave the metric formerly called
+`store.size.total`; the old name is no longer emitted, so the Store Size "Total" row reads `store.size.full`.
 
 When a query is malformed, or the specific metric is filtered out an empty array is returned but no error.
 So to debug a jmx query make sure to read the docs on the exact syntax and check the metrics.filter setting.
@@ -60,7 +63,7 @@ const sysInfoMetrics: SysInfoMetrics[] = [
   {
     group: 'Store Size',
     type: 'database',
-    baseMetricNames: ['store.size.total', 'store.size.database']
+    baseMetricNames: ['store.size.full', 'store.size.database']
   },
   {
     group: 'Page Cache',
@@ -195,7 +198,7 @@ export const responseHandler = (setState: (newState: any) => void) =>
     const storeSizes = [
       {
         label: 'Total',
-        value: size.total ? toHumanReadableBytes(size.total) : size.total
+        value: size.full ? toHumanReadableBytes(size.full) : size.full
       },
       {
         label: 'Database',

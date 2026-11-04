@@ -1,0 +1,29 @@
+# The release line this branch builds, read by scripts/release-gate.py. Every release branch keeps its own
+# copy; the gate and the stack are identical on every line, and this file says what differs.
+#
+# neo4j_tag and dozerdb_version restate the pins in distribution/config.json (tag, distributionVersion);
+# the gate fails when they disagree, so update them together.
+line = "calendar"                         # calendar (main) or lts (an lts/<series> branch)
+neo4j_tag = "2026.10.1"
+dozerdb_version = "2026.10.1.0"
+image = "graphstack/dozerdb:2026.10.1.0"  # the published image of this version; the gate tests it with --published
+# The latest local build of this line, the image the gate and the check scripts test by default. Every local build
+# (scripts/docker-build.py) is tagged with it and with dozerdb:<dozerdb_version>-local, so the builds of the
+# calendar and LTS lines sit side by side on one machine.
+local_image = "dozerdb:calendar-local"
+# The Open GDS version the image installs from NEO4J_PLUGINS for this Neo4j version, as registered in
+# https://dist.dozerdb.org/plugins/open-gds/versions.json; the docker-plugins check requires gds.version() to be it.
+gds_version = "2026.10.1"
+
+# Every check the gate runs: true runs it, false reports it as SKIP and does not fail the run.
+# The metrics checks (metrics, stack-metrics) stay false on a line that does not emit metrics yet.
+[checks]
+jars = true                 # scripts/check-jars.py: JAR contents, notices and service files
+smoke-plugin = true         # scripts/smoke.py plugin
+smoke-distribution = true   # scripts/smoke.py distribution
+smoke-docker = true         # scripts/smoke.py docker
+metrics = true              # scripts/metrics-check.py: every delivery form with a real Prometheus
+docker-plugins = true       # scripts/docker-plugins.py: APOC and Open GDS (at gds_version) from NEO4J_PLUGINS
+stack-metrics = true        # the stack's Prometheus scrapes DozerDB and its Graphite receives from it
+cypher-flow = true          # scripts/cypher-flow.py against the stack's DozerDB
+browser-flow = true         # scripts/browser-flow.mjs against the stack's DozerDB, headless Chromium

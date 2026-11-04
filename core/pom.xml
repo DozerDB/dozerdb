@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.dozerdb</groupId>
     <artifactId>dozerdb-core-parent</artifactId>
-    <version>2026.10.0-1.1.0</version>
+    <version>2026.10.1-1.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>dozerdb-core</artifactId>
-  <version>2026.10.0-1.1.0</version>
+  <version>2026.10.1-1.1.0</version>
   <packaging>jar</packaging>
 
   <name>DozerDB</name>
@@ -204,6 +204,15 @@
         <configuration>
           <finalName>dozerdb-core-${dozerdb-core.version}</finalName>
         </configuration>
+        <executions>
+          <!-- The test JAR carries the in-process DozerDB builder (org.neo4j.harness.DozerDbBuilders) for other modules' tests. -->
+          <execution>
+            <id>test-jar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

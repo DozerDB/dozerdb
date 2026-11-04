@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.neo4j</groupId>
     <artifactId>parent</artifactId>
-    <version>2026.10.0</version>
+    <version>2026.10.1</version>
   </parent>
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-core-parent</artifactId>
-  <version>2026.10.0-1.1.0</version>
+  <version>2026.10.1-1.1.0</version>
   <packaging>pom</packaging>
   <name>dozerdb-core-parent</name>
   <description>DozerDB Plugin Core for Neo4j</description>
@@ -36,6 +36,7 @@
 
   <modules>
     <module>core</module>
+    <module>metrics</module>
     <module>plugin</module>
   </modules>
 
@@ -53,13 +54,13 @@
     <dependency.analyze.failOnWarning>false</dependency.analyze.failOnWarning>
 
     <!-- We define the dozerdb-core.version here because we want to keep the main project version the same as the parent neo4j project version. -->
-    <dozerdb-core.version>2026.10.0-1.1.0</dozerdb-core.version>
+    <dozerdb-core.version>2026.10.1-1.1.0</dozerdb-core.version>
     <java.version>21</java.version>
     <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
     <maven.compiler.release>21</maven.compiler.release>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <neo4j.version>2026.10.0</neo4j.version>
+    <neo4j.version>2026.10.1</neo4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

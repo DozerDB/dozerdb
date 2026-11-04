@@ -1,0 +1,24 @@
+org.dozerdb.metrics.settings.MetricsSettings public final class extends java.lang.Object implements org.neo4j.configuration.SettingsDeclaration
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption public static final enum extends java.lang.Enum<org.dozerdb.metrics.settings.MetricsSettings.CompressionOption>
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption::GZ org.dozerdb.metrics.settings.MetricsSettings.CompressionOption public static final
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption::NONE org.dozerdb.metrics.settings.MetricsSettings.CompressionOption public static final
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption::ZIP org.dozerdb.metrics.settings.MetricsSettings.CompressionOption public static final
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption::valueOf(java.lang.String) org.dozerdb.metrics.settings.MetricsSettings.CompressionOption public static
+org.dozerdb.metrics.settings.MetricsSettings.CompressionOption::values() org.dozerdb.metrics.settings.MetricsSettings.CompressionOption[] public static
+org.dozerdb.metrics.settings.MetricsSettings::MetricsSettings() void public
+org.dozerdb.metrics.settings.MetricsSettings::csv_archives_compression org.neo4j.graphdb.config.Setting<org.dozerdb.metrics.settings.MetricsSettings.CompressionOption> public static final
+org.dozerdb.metrics.settings.MetricsSettings::csv_enabled org.neo4j.graphdb.config.Setting<java.lang.Boolean> public static final
+org.dozerdb.metrics.settings.MetricsSettings::csv_interval org.neo4j.graphdb.config.Setting<java.time.Duration> public static final
+org.dozerdb.metrics.settings.MetricsSettings::csv_max_archives org.neo4j.graphdb.config.Setting<java.lang.Integer> public static final
+org.dozerdb.metrics.settings.MetricsSettings::csv_path org.neo4j.graphdb.config.Setting<java.nio.file.Path> public static final
+org.dozerdb.metrics.settings.MetricsSettings::csv_rotation_threshold org.neo4j.graphdb.config.Setting<java.lang.Long> public static final
+org.dozerdb.metrics.settings.MetricsSettings::graphite_enabled org.neo4j.graphdb.config.Setting<java.lang.Boolean> public static final
+org.dozerdb.metrics.settings.MetricsSettings::graphite_interval org.neo4j.graphdb.config.Setting<java.time.Duration> public static final
+org.dozerdb.metrics.settings.MetricsSettings::graphite_server org.neo4j.graphdb.config.Setting<org.neo4j.configuration.helpers.SocketAddress> public static final
+org.dozerdb.metrics.settings.MetricsSettings::jmx_enabled org.neo4j.graphdb.config.Setting<java.lang.Boolean> public static final
+org.dozerdb.metrics.settings.MetricsSettings::metrics_deny_filter org.neo4j.graphdb.config.Setting<java.util.List<org.neo4j.configuration.helpers.GlobbingPattern>> public static final
+org.dozerdb.metrics.settings.MetricsSettings::metrics_enabled org.neo4j.graphdb.config.Setting<java.lang.Boolean> public static final
+org.dozerdb.metrics.settings.MetricsSettings::metrics_filter org.neo4j.graphdb.config.Setting<java.util.List<org.neo4j.configuration.helpers.GlobbingPattern>> public static final
+org.dozerdb.metrics.settings.MetricsSettings::metrics_prefix org.neo4j.graphdb.config.Setting<java.lang.String> public static final
+org.dozerdb.metrics.settings.MetricsSettings::prometheus_enabled org.neo4j.graphdb.config.Setting<java.lang.Boolean> public static final
+org.dozerdb.metrics.settings.MetricsSettings::prometheus_endpoint org.neo4j.graphdb.config.Setting<org.neo4j.configuration.helpers.SocketAddress> public static final

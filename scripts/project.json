@@ -1,0 +1,16 @@
+{
+  "name": "release",
+  "root": "scripts",
+  "projectType": "application",
+  "targets": {
+    "gate": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/release-gate.py",
+        "cwd": "."
+      },
+      "outputs": []
+    }
+  }
+}

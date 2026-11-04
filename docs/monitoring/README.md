@@ -1,0 +1,86 @@
+# Monitoring DozerDB
+
+<!-- Blocks between BEGIN GENERATED and END GENERATED are written by scripts/metrics-docs.py from the metric
+inventory and the settings declaration. Change those sources and run the script; do not edit the blocks. -->
+
+<!-- BEGIN GENERATED: version -->
+This page tracks the Neo4j Operations Manual **2026.10** ([monitoring](https://neo4j.com/docs/operations-manual/2026.10/monitoring/)) for the DozerDB **2026.10** release line: DozerDB `2026.10.1.<revision>`, built on Neo4j `2026.10.1`.
+<!-- END GENERATED: version -->
+
+DozerDB provides the metrics that the Neo4j Operations Manual documents for Neo4j
+Enterprise Edition: the `server.metrics.*` settings with Neo4j's defaults, the
+documented metric names and types, and the four ways to read them: CSV files, JMX
+MBeans, a Prometheus endpoint and a Graphite exporter. The plugin JAR, the
+standalone distribution and the Docker image behave the same way. A `neo4j.conf`
+written for Neo4j's metrics starts DozerDB unchanged, and dashboards and alerts
+built on Neo4j's metric names find every metric DozerDB emits under the same name.
+
+DozerDB is an independent open source project. Neo4j, Inc. has not reviewed or
+endorsed this documentation. It links to Neo4j's documentation because DozerDB
+follows it; the descriptions of the metrics are Neo4j's, on Neo4j's pages.
+
+## Pages
+
+- [Enable and expose metrics](enable-and-expose.md): the settings, their defaults and
+  how DozerDB applies them, the default filter, and how each exporter names the metrics.
+- [Compatibility matrix](compatibility-matrix.md): every metric of Neo4j's metrics
+  reference with its type, scope, compatibility tier and whether the default filter
+  enables it.
+- [Differences from Neo4j](differences.md): every metric that is not fully compatible,
+  with the reason, and the places where DozerDB behaves differently on purpose.
+
+## Which Neo4j pages apply
+
+| Neo4j Operations Manual page | Applies to DozerDB |
+| --- | --- |
+| [Metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/) | Yes, except the mention of Neo4j Ops Manager, which DozerDB does not include or support. |
+| [Essential metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/essential/) | Yes, except the Raft leader metric of the cluster health section, which a single server does not have. The node and relationship totals are emitted as `neo4j.count.*`, the reference table's spelling ([details](differences.md#data-count-metric-names)). |
+| [Enable metrics logging](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/enable/) | Yes. |
+| [Expose metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/expose/) | Yes for CSV files, JMX MBeans, Graphite and Prometheus; not the Neo4j Ops Manager section. |
+| [Metrics reference](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/reference/) | Metric by metric, as the [compatibility matrix](compatibility-matrix.md) shows. |
+| [Configuration settings](https://neo4j.com/docs/operations-manual/2026.10/configuration/configuration-settings/), the `server.metrics.*` entries and `server.directories.metrics` | Yes: every one is accepted with Neo4j's default, type and validation ([settings](enable-and-expose.md#settings)). |
+
+The other chapters of the Monitoring section (logging, query, transaction and
+connection management, and the rest) are outside the scope of these pages.
+
+## Compatibility at a glance
+
+Every metric in Neo4j's reference has exactly one compatibility tier.
+
+<!-- BEGIN GENERATED: tier-summary -->
+| Tier | Metrics | Meaning |
+| --- | --- | --- |
+| Compatible | 145 | Emitted with the documented name and type; a test provokes the real event and observes the change. |
+| Partial | 46 | Emitted with the documented name and type, but the value differs from Neo4j, stays at zero on DozerDB, or could not be verified. The reason is on the [differences page](differences.md). |
+| Unsupported | 1 | Not emitted although a single server could have it. The reason is on the [differences page](differences.md). |
+| Not applicable | 44 | Not emitted because it measures a capability a single-instance server does not have (clustering). |
+| **All documented metrics** | **236** | |
+<!-- END GENERATED: tier-summary -->
+
+## Where DozerDB differs
+
+Each point is one sentence here; the [differences page](differences.md) has the detail.
+
+- A metrics problem at runtime never stops the server: a failing collector or
+  exporter logs one error and switches itself off
+  ([details](differences.md#a-metrics-failure-never-stops-the-server)).
+- Some metrics are emitted but stay at zero, because the Neo4j mechanism that
+  drives them exists only in Enterprise Edition or in a cluster
+  ([details](differences.md#metrics-that-stay-at-zero)).
+- Histograms keep a sample of recent values whose statistics have not been compared
+  with Neo4j Enterprise Edition ([details](differences.md#histograms)).
+- The default filter enables none of the Cypher cache metrics, as the documented
+  default would on Neo4j; widen the filter to get them
+  ([details](differences.md#cypher-cache-metrics-and-the-default-filter)).
+- The node and relationship totals carry the reference table's `neo4j.count`
+  segment, not the essential page's `count`
+  ([details](differences.md#data-count-metric-names)).
+- The CSV file names, the Prometheus text and the Graphite paths follow the
+  conventions Neo4j uses where it documents them and public evidence where it does
+  not; they have not been compared with Neo4j Enterprise Edition output
+  ([details](differences.md#output-formats)).
+- Clustering metrics and the virtual thread count are not emitted
+  ([details](differences.md#metrics-that-are-not-compatible)).
+- A Neo4j Browser that still asks for `store.size.total` shows no total store size
+  in `:sysinfo`, because that metric is no longer in Neo4j's reference; DozerDB
+  Browser reads `store.size.full` instead ([details](differences.md#store-size-in-sysinfo)).

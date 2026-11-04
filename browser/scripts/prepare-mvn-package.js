@@ -34,16 +34,18 @@ function mkPath(dirPath) {
 }
 
 mkPath(path.join(__dirname, '../mvn'))
-ncp(path.join(__dirname, '../dist'), path.join(__dirname, '../mvn/browser'))
+// The licence files are copied only after the dist copy has created mvn/browser: started concurrently, the
+// single-file copies raced the directory copy and lost under load, leaving a JAR without LICENSE and LICENSES.txt.
 ncp(
-  path.join(__dirname, '../LICENSE'),
-  path.join(__dirname, '../mvn/browser/LICENSE')
-)
-ncp(
-  path.join(__dirname, '../LICENSES.txt'),
-  path.join(__dirname, '../mvn/browser/LICENSES.txt')
-)
-ncp(
-  path.join(__dirname, '../NOTICE.txt'),
-  path.join(__dirname, '../mvn/browser/NOTICE.txt')
+  path.join(__dirname, '../dist'),
+  path.join(__dirname, '../mvn/browser'),
+  err => {
+    if (err) throw err
+    for (const name of ['LICENSE', 'LICENSES.txt', 'NOTICE.txt']) {
+      fs.copyFileSync(
+        path.join(__dirname, '..', name),
+        path.join(__dirname, '../mvn/browser', name)
+      )
+    }
+  }
 )

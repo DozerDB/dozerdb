@@ -14,12 +14,12 @@
 +    <dependency>
 +      <groupId>org.dozerdb</groupId>
 +      <artifactId>dozerdb-core</artifactId>
-+      <version>2026.10.0-1.1.0</version>
++      <version>2026.10.1-1.1.0</version>
      </dependency>
      <dependency>
 +      <groupId>org.dozerdb.client</groupId>
 +      <artifactId>dozerdb-browser</artifactId>
-+      <version>2026.10.0.0</version>
++      <version>2026.10.1.0</version>
 +    </dependency>
 +    <dependency>
        <groupId>org.neo4j</groupId>
@@ -41,7 +41,7 @@
  fi
  
 +# Bootstrap DozerDB before the upstream server implementation.
-+CLASSPATH="$BASEDIR/lib/dozerdb-core-2026.10.0-1.1.0.jar:$CLASSPATH"
++CLASSPATH="$BASEDIR/lib/dozerdb-core-2026.10.1-1.1.0.jar:$CLASSPATH"
 +
  exec "$JAVACMD" @EXTRA_JVM_ARGUMENTS@ \
    -classpath "$CLASSPATH" \

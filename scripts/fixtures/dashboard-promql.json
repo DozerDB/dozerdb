@@ -1,0 +1,3568 @@
+{
+ "description": "PromQL fixture for the Prometheus release-gate check: every panel expression of the two most-downloaded community Neo4j dashboards on Grafana.com that target self-managed Neo4j over Prometheus (10371 'Neo4j Dashboard' revision 1 and 12046 'neo4j version 5 dashboard' revisions 2 and 1). Shape: `dashboards` identifies each dashboard revision (id, revision, title, author, downloads, dates, URLs, SHA-256 of the downloaded JSON, the Neo4j name-form era its names belong to, and its template variables, which a replay must substitute); `expectation_tags` is the vocabulary of `expect`; `expressions` has one entry per panel target, in dashboard and panel order: `dashboard` and `revision` (keys into `dashboards`), `panel`, `panel_type`, `ref_id`, `expr` (the verbatim PromQL), `metric_names` (literal metric names in expr), `name_regexes` (__name__ regexes in expr), `expr_2026_10_form` (expr with every literal name rewritten into the 2026.10 Prometheus form that DozerDB emits, or null when the expression selects names by regex, which cannot be rewritten mechanically), `names_2026_10_form` (the 2026.10-form names the expression reads, regexes expanded to the names they matched on a server of their era), `verbatim_is_2026_10_form` (true when expr needs no rewrite), and `expect` (what a replay against a DozerDB 2026.10 server with the default filter must find, see expectation_tags). A replay runs expr verbatim where verbatim_is_2026_10_form is true, expr_2026_10_form otherwise, and the names in names_2026_10_form for regex expressions. Extracted from the dashboards' JSON as the Grafana.com API serves it (see generated_from and selection_rule); change it only to record a documented error.",
+ "generated_from": "grafana.com public API, catalogue pages 1-102 of /api/dashboards?orderBy=downloads&direction=desc&pageSize=100, fetched 2026-10-30T03:13Z",
+ "selection_rule": "dashboards whose name, slug, description or readme mention neo4j; the two with the most downloads that target self-managed Neo4j over Prometheus",
+ "expectation_tags": {
+  "data-with-default-filter": "every metric the expression reads is documented in the Operations Manual 2026.10, DozerDB emits it and the verbatim 2026.10 default server.metrics.filter admits it: the replay requires at least one series",
+  "data-only-if-filter-widened": "every metric is documented and emitted, but at least one is outside the default filter (page_cache.pins, transaction.started, vm.gc.count.*, log.*, ...): data only with server.metrics.filter widened",
+  "not-applicable-clustering": "Raft or store-copy metrics that a single-instance server never emits: the replay requires no series",
+  "not-a-neo4j-metric": "Prometheus's own `up` or a custom procedure metric of the dashboard author: not DozerDB's to emit",
+  "stale-name-no-2026-10-equivalent": "a metric Neo4j removed (bolt.sessions_started): no 2026.10 name exists",
+  "regex-matches-nothing": "the dashboard's own __name__ regex can match no metric on any server"
+ },
+ "dashboards": [
+  {
+   "id": 10371,
+   "revision": 1,
+   "title": "Neo4j Dashboard",
+   "uid": "VdDGFqUik",
+   "author_org": "Graph Aware",
+   "author_slug": "graphaware",
+   "downloads_all_revisions": 3951,
+   "created_at": "2019-06-18T13:25:43.000Z",
+   "updated_at": "2019-06-18T13:43:23.000Z",
+   "page_url": "https://grafana.com/grafana/dashboards/10371",
+   "download_url": "https://grafana.com/api/dashboards/10371/revisions/1/download",
+   "json_sha256": "6de98bf60855d50705605e0b8c158bae108935e7cfae2628e1759c620cdab814",
+   "name_form_era": "Neo4j 3.5: neo4j_<metric> with no database segment, JVM metrics as vm_* without prefix",
+   "template_variables": [
+    {
+     "name": "job",
+     "type": "query",
+     "query": "label_values(job)",
+     "regex": ""
+    },
+    {
+     "name": "neo4j_instance",
+     "type": "query",
+     "query": "label_values(instance)",
+     "regex": "/neo4j-(?:core|replica)/"
+    },
+    {
+     "name": "leader",
+     "type": "query",
+     "query": "query_result(neo4j_causal_clustering_core_is_leader == 1)",
+     "regex": "/instance=\\\"(.+)\\\",/"
+    },
+    {
+     "name": "interval",
+     "type": "interval",
+     "query": "30s,1m,2m,3m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+     "regex": null
+    }
+   ]
+  },
+  {
+   "id": 12046,
+   "revision": 2,
+   "title": "neo4j version 5 dashboard",
+   "uid": "252345345",
+   "author_org": "webcoderz",
+   "author_slug": "webcoderz",
+   "downloads_all_revisions": 1203,
+   "created_at": "2020-04-07T19:44:00.000Z",
+   "updated_at": "2023-08-05T06:47:34.000Z",
+   "page_url": "https://grafana.com/grafana/dashboards/12046",
+   "download_url": "https://grafana.com/api/dashboards/12046/revisions/2/download",
+   "json_sha256": "6a30ca5faaf976d8b933cb5680a6b2c0bacfccbfad76a2458abfcb9438edbd05",
+   "name_form_era": "Neo4j 5.x: neo4j_database_<db>_<metric> and neo4j_dbms_<metric>; 27 of 60 expressions still use 4.x (neo4j_neo4j_<metric>, neo4j_<metric>) or 3.x (vm_gc_count_*, neo4j_bolt_*) forms",
+   "template_variables": [
+    {
+     "name": "interval",
+     "type": "interval",
+     "query": "\t30s,1m,2m,3m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+     "regex": null
+    }
+   ]
+  },
+  {
+   "id": 12046,
+   "revision": 1,
+   "title": "neo4j version 4 dashboard",
+   "uid": "n__-I5jZk",
+   "author_org": "webcoderz",
+   "author_slug": "webcoderz",
+   "downloads_all_revisions": 1203,
+   "created_at": "2020-04-07T19:44:00.000Z",
+   "updated_at": "2023-08-05T06:47:34.000Z",
+   "page_url": "https://grafana.com/grafana/dashboards/12046",
+   "download_url": "https://grafana.com/api/dashboards/12046/revisions/1/download",
+   "json_sha256": "d8c89070901deb1f16ee8c76d68d4bc693b1ec60c6c35b9a1cd53cf35433de12",
+   "name_form_era": "Neo4j 4.x with namespaces disabled: database metrics neo4j_<db>_<metric>, global neo4j_<metric>",
+   "template_variables": [
+    {
+     "name": "interval",
+     "type": "interval",
+     "query": "\t30s,1m,2m,3m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+     "regex": null
+    }
+   ]
+  }
+ ],
+ "expressions": [
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "$neo4j_instance Status",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "up{job='$job', instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "up"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "up{job='$job', instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "not-a-neo4j-metric"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Counters of Graph Items",
+   "panel_type": "graph",
+   "ref_id": "F",
+   "expr": "label_replace({__name__=~\"neo4j_ids_in_use_(node|property|relationship)\", job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_ids_in_use_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_ids_in_use_(node|property|relationship)"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node",
+    "neo4j_database_neo4j_ids_in_use_property",
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Counters of Graph Items",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_ids_in_use_relationship_type{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_ids_in_use_relationship_type"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_ids_in_use_relationship_type{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship_type"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "F",
+   "expr": "rate(neo4j_ids_in_use_node{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_node{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_ids_in_use_relationship{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_relationship{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_ids_in_use_property{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_property{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Node creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_ids_in_use_node{job='$job', instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_node{job='$job', instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Relationship creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_ids_in_use_relationship{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_relationship{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Property creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_ids_in_use_property{job='$job', instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_property{job='$job', instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Last Closed Transaction ID",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "neo4j_transaction_last_closed_tx_id_total{job='$job', instance=~\"$leader\"}",
+   "metric_names": [
+    "neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_closed_tx_id_total{job='$job', instance=~\"$leader\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed Transaction Speed",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_transaction_committed_total{job='$job', instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total{job='$job', instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Rolled back Transaction Speed",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_transaction_rollbacks_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_rollbacks_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_rollbacks_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_rollbacks_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_transaction_(started|committed|rollbacks|terminated)_total\", job='$job', instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_transaction_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_transaction_(started|committed|rollbacks|terminated)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total",
+    "neo4j_database_neo4j_transaction_rollbacks_total",
+    "neo4j_database_neo4j_transaction_started_total",
+    "neo4j_database_neo4j_transaction_terminated_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_transaction_committed_read_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_read_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_transaction_committed_write_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_write_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Last Committed Write Transaction ID",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "neo4j_transaction_last_committed_tx_id_total{job='$job', instance=\"$leader\"}",
+   "metric_names": [
+    "neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_committed_tx_id_total{job='$job', instance=\"$leader\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_transaction_active_read{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_active_read"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_read{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_read"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "neo4j_transaction_active_write{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_active_write"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_write{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_write"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_transaction_peak_concurrent_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_transaction_peak_concurrent_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_peak_concurrent_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_peak_concurrent_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed Read Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_transaction_committed_read_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_read_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed Write Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "rate(neo4j_transaction_committed_write_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_write_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "irate(neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total{job='$job', instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Custom metric my-timer",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "com_graphaware_neo4j_monitoring_MonitorProcedure_my_timer * 10000",
+   "metric_names": [
+    "com_graphaware_neo4j_monitoring_MonitorProcedure_my_timer"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "com_graphaware_neo4j_monitoring_MonitorProcedure_my_timer * 10000",
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "not-a-neo4j-metric"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Custom metric my-counter rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "irate(com_graphaware_neo4j_monitoring_MonitorProcedure_my_counter[$interval])",
+   "metric_names": [
+    "com_graphaware_neo4j_monitoring_MonitorProcedure_my_counter"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(com_graphaware_neo4j_monitoring_MonitorProcedure_my_counter[$interval])",
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "not-a-neo4j-metric"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Messages (done vs failed)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_messages_(done|failed)_total\", job='$job', instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_messages_(done|failed)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_done_total",
+    "neo4j_dbms_bolt_messages_failed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_bolt_messages_received_total{job='$job', instance=~\"$neo4j_instance\"} - neo4j_bolt_messages_started_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_bolt_messages_received_total",
+    "neo4j_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_bolt_messages_received_total{job='$job', instance=~\"$neo4j_instance\"} - neo4j_dbms_bolt_messages_started_total{job='$job', instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_messages_(received|started)_total\", job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_messages_(received|started)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_messages_received_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_received_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_received_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "rate(neo4j_bolt_messages_started_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_started_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Rate of message queue time",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_accumulated_queue_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_queue_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_queue_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_queue_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Connections",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_connections_.+\", job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_connections_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_connections_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_connections_closed_total",
+    "neo4j_dbms_bolt_connections_idle",
+    "neo4j_dbms_bolt_connections_opened_total",
+    "neo4j_dbms_bolt_connections_running"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt Sessions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_sessions.+\",  job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_sessions_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_sessions.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "stale-name-no-2026-10-equivalent"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Bolt rate of message processing time",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_bolt_accumulated_processing_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_processing_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_processing_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_processing_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache faults",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_page_faults_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_page_faults_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache faults/sec",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_page_faults_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_page_faults_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_pins_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_pins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_pins_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_pins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_page_cache_unpins_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_unpins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_unpins_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_unpins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache evictions rate (evictions/sec)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_evictions_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_evictions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_evictions_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_evictions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache evictions rate (evictions/sec)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_eviction_exceptions_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_eviction_exceptions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_eviction_exceptions_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_eviction_exceptions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache evictions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_evictions_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_page_cache_evictions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_evictions_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_evictions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache flushes",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_flushes_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_flushes_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page Cache Hits",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_page_cache_hits_total{job='$job'}",
+   "metric_names": [
+    "neo4j_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hits_total{job='$job'}",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page Cache Hits Rate (hits/sec)",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_page_cache_hits_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_hits_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page cache flushes rate (flushes/sec)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_flushes_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_flushes_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Page Cache Hit Ratio",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_page_cache_hit_ratio{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_page_cache_hit_ratio"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hit_ratio{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hit_ratio"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Neo4j Log Rotation",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_log_.+\", job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_log_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_log_rotation_duration",
+    "neo4j_database_neo4j_log_rotation_events_total",
+    "neo4j_database_neo4j_log_rotation_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Checkpoints",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_check_point_(events|total_time)_total\", job=\"$job\", instance=~\"$neo4j_instance\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_check_point_(events|total_time)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_events_total",
+    "neo4j_database_neo4j_check_point_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Checkpoint event duration sec",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_check_point_check_point_duration{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_check_point_check_point_duration"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_check_point_duration{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_duration"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "{__name__=~\"vm_gc_time_g1_.+_generation_total\", job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [],
+   "name_regexes": [
+    "vm_gc_time_g1_.+_generation_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total",
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "delta(vm_gc_time_g1_old_generation_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "vm_gc_time_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_old_generation_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "delta(vm_gc_time_g1_young_generation_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "metric_names": [
+    "vm_gc_time_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_young_generation_total{job=\"$job\", instance=~\"$neo4j_instance\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "vm_gc_count_g1_old_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_old_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "E",
+   "expr": "vm_gc_count_g1_young_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_young_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "VM Live Threads",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "vm_thread_count{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "vm_thread_count"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_threads{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_threads"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "JVM Heap Size",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "sum({__name__=~\"vm_memory_pool_g1_(eden|old|survivor).*\", job=\"$job\", instance=~\"$neo4j_instance\"}) by (instance)",
+   "metric_names": [],
+   "name_regexes": [
+    "vm_memory_pool_g1_(eden|old|survivor).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_g1_eden_space",
+    "neo4j_dbms_vm_memory_pool_g1_old_gen",
+    "neo4j_dbms_vm_memory_pool_g1_survivor_space"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "JVM Heap Size",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "sum({__name__=~\"vm_memory_pool_(code|compressed|metaspace).*\", job=\"$job\", instance=~\"$neo4j_instance\"}) by (instance)",
+   "metric_names": [],
+   "name_regexes": [
+    "vm_memory_pool_(code|compressed|metaspace).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_code_cache",
+    "neo4j_dbms_vm_memory_pool_compressed_class_space",
+    "neo4j_dbms_vm_memory_pool_metaspace"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "vm_memory_buffer_direct_used{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "vm_memory_buffer_direct_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_direct_used{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_direct_used"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "vm_memory_buffer_mapped_used{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "vm_memory_buffer_mapped_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_mapped_used{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_mapped_used"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed read transaction rate - Leader Vs Others",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_transaction_committed_read_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_read_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed read transaction rate - Leader Vs Others",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "sum(rate(neo4j_transaction_committed_read_total{job=\"$job\", instance!=\"$leader\"}[$interval]))",
+   "metric_names": [
+    "neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "sum(rate(neo4j_database_neo4j_transaction_committed_read_total{job=\"$job\", instance!=\"$leader\"}[$interval]))",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed write transaction rate - Leader Vs Others",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_transaction_committed_write_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "metric_names": [
+    "neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_write_total{job=\"$job\", instance=\"$leader\"}[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Committed write transaction rate - Leader Vs Others",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "sum(rate(neo4j_transaction_committed_write_total{job=\"$job\", instance!=\"$leader\"}[$interval]))",
+   "metric_names": [
+    "neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "sum(rate(neo4j_database_neo4j_transaction_committed_write_total{job=\"$job\", instance!=\"$leader\"}[$interval]))",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Replicate pulls rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_causal_clustering_read_replica_pull_updates_total[$interval])",
+   "metric_names": [
+    "neo4j_causal_clustering_read_replica_pull_updates_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_cluster_store_copy_pull_updates_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cluster_store_copy_pull_updates_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "not-applicable-clustering"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Core message processing",
+   "panel_type": "heatmap",
+   "ref_id": "A",
+   "expr": "neo4j_causal_clustering_core_message_processing_timer{job=\"$job\", instance=~\"$neo4j_instance\"} * 10000",
+   "metric_names": [
+    "neo4j_causal_clustering_core_message_processing_timer"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cluster_raft_message_processing_timer{job=\"$job\", instance=~\"$neo4j_instance\"} * 10000",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cluster_raft_message_processing_timer"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "not-applicable-clustering"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Core election timeout ",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_causal_clustering_core_message_processing_timer_election_timeout{job=\"$job\", instance=~\"$neo4j_instance\", quantile=\"0.5\"} * 10000",
+   "metric_names": [
+    "neo4j_causal_clustering_core_message_processing_timer_election_timeout"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cluster_raft_message_processing_timer{job=\"$job\", instance=~\"$neo4j_instance\", quantile=\"0.5\"} * 10000",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cluster_raft_message_processing_timer"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "not-applicable-clustering"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Core election timeout ",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_causal_clustering_core_message_processing_timer_election_timeout_count{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_causal_clustering_core_message_processing_timer_election_timeout_count"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cluster_raft_message_processing_timer{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cluster_raft_message_processing_timer"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "not-applicable-clustering"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Cyper replan events",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_cypher_replan_events_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_cypher_replan_events_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_events_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_events_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 10371,
+   "revision": 1,
+   "panel": "Cyper wait time",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_cypher_replan_wait_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "metric_names": [
+    "neo4j_cypher_replan_wait_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_wait_time_total{job=\"$job\", instance=~\"$neo4j_instance\"}",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_wait_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Neo4j Status",
+   "panel_type": "stat",
+   "ref_id": "A",
+   "expr": "up{job=\"neo4j-prometheus\"}",
+   "metric_names": [
+    "up"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "up{job=\"neo4j-prometheus\"}",
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "not-a-neo4j-metric"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Relationship creation speed (ids)",
+   "panel_type": "gauge",
+   "ref_id": "A",
+   "expr": "irate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Property creation speed (ids)",
+   "panel_type": "gauge",
+   "ref_id": "A",
+   "expr": "irate(neo4j_database_neo4j_ids_in_use_property[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_property[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Node creation speed (ids)",
+   "panel_type": "gauge",
+   "ref_id": "A",
+   "expr": "irate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Counters of Graph Items",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_database_neo4j_ids_in_use_(node|property|relationship)\"}, \"label\", \"$1\", \"__name__\", \"neo4j_neo4j_ids_in_use_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_database_neo4j_ids_in_use_(node|property|relationship)"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node",
+    "neo4j_database_neo4j_ids_in_use_property",
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Counters of Graph Items",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_ids_in_use_relationship_type",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_relationship_type"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_ids_in_use_relationship_type",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship_type"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "rate(neo4j_neo4j_ids_in_use_relationship[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "rate(neo4j_neo4j_ids_in_use_property[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_property[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_dbms_bolt_messages_received_total[$interval]) - rate(neo4j_dbms_bolt_messages_started_total[$interval])",
+   "metric_names": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_received_total[$interval]) - rate(neo4j_dbms_bolt_messages_started_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_messages_(received|started)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_messages_(received|started)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_messages_received_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_received_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_received_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "timeseries",
+   "ref_id": "D",
+   "expr": "rate(neo4j_bolt_messages_started_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_started_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Connections",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_connections_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_connections_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_dbms_bolt_connections_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_connections_closed_total",
+    "neo4j_dbms_bolt_connections_idle",
+    "neo4j_dbms_bolt_connections_opened_total",
+    "neo4j_dbms_bolt_connections_running"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Messages (done vs failed)",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_messages_(done|failed)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_dbms_bolt_messages_(done|failed)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_done_total",
+    "neo4j_dbms_bolt_messages_failed_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Rate of message queue time",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_accumulated_queue_time_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_queue_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_queue_time_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_queue_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt rate of message processing time",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_bolt_accumulated_processing_time_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_processing_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_processing_time_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_processing_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Bolt Sessions",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_connections_running.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_connections_running\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_dbms_bolt_connections_running.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "regex-matches-nothing"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Cypher wait time",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_cypher_replan_wait_time_total",
+   "metric_names": [
+    "neo4j_neo4j_cypher_replan_wait_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_wait_time_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_wait_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Cypher replan events",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_database_neo4j_cypher_replan_events_total",
+   "metric_names": [
+    "neo4j_database_neo4j_cypher_replan_events_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_events_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_events_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "neo4j_dbms_vm_memory_buffer_direct_used",
+   "metric_names": [
+    "neo4j_dbms_vm_memory_buffer_direct_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_direct_used",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_direct_used"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_vm_memory_buffer_mapped_used",
+   "metric_names": [
+    "neo4j_vm_memory_buffer_mapped_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_mapped_used",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_mapped_used"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Live Threads",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_dbms_vm_threads",
+   "metric_names": [
+    "neo4j_dbms_vm_threads"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_threads",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_threads"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Garbage Collector",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "{__name__=~\"neo4j_dbms_vm_gc_time_g1_.+_generation_total\"}",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_dbms_vm_gc_time_g1_.+_generation_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total",
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Garbage Collector",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "delta(neo4j_vm_gc_time_g1_old_generation_total[$interval])",
+   "metric_names": [
+    "neo4j_vm_gc_time_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_old_generation_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Garbage Collector",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "delta(neo4j_vm_gc_time_g1_young_generation_total[$interval])",
+   "metric_names": [
+    "neo4j_vm_gc_time_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_young_generation_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Garbage Collector",
+   "panel_type": "timeseries",
+   "ref_id": "D",
+   "expr": "vm_gc_count_g1_old_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_old_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "VM Garbage Collector",
+   "panel_type": "timeseries",
+   "ref_id": "E",
+   "expr": "vm_gc_count_g1_young_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_young_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "JVM Heap Size",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "sum({__name__=~\"neo4j_dbms_vm_memory_pool_g1_(eden|old|survivor).*\"})",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_dbms_vm_memory_pool_g1_(eden|old|survivor).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_g1_eden_space",
+    "neo4j_dbms_vm_memory_pool_g1_old_gen",
+    "neo4j_dbms_vm_memory_pool_g1_survivor_space"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "JVM Heap Size",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "sum({__name__=~\"neo4j_vm_memory_pool_(code|compressed|metaspace).*\"}) ",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_vm_memory_pool_(code|compressed|metaspace).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_code_cache",
+    "neo4j_dbms_vm_memory_pool_compressed_class_space",
+    "neo4j_dbms_vm_memory_pool_metaspace"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache faults",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_dbms_page_cache_page_faults_total",
+   "metric_names": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_page_faults_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache faults/sec",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
+   "metric_names": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache faults rate (faults/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
+   "metric_names": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache faults rate (faults/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_eviction_exceptions_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_eviction_exceptions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_eviction_exceptions_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_eviction_exceptions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache faults",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_dbms_page_cache_page_faults_total",
+   "metric_names": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_page_faults_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page Cache Hits",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "neo4j_dbms_page_cache_hits_total",
+   "metric_names": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hits_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page Cache Hits Rate (hits/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "rate(neo4j_dbms_page_cache_hits_total[$interval])",
+   "metric_names": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_hits_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_pins_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_pins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_pins_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_pins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "rate(neo4j_page_cache_unpins_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_unpins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_unpins_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_unpins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page Cache Hit Ratio",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "neo4j_dbms_page_cache_hit_ratio",
+   "metric_names": [
+    "neo4j_dbms_page_cache_hit_ratio"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hit_ratio",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hit_ratio"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache flushes",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_flushes_total",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_flushes_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Page cache flushes rate (flushes/sec)",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_flushes_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_flushes_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Checkpoints",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_database_neo4j_check_point_(events|total_time)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_database_neo4j_check_point_(events|total_time)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_events_total",
+    "neo4j_database_neo4j_check_point_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Checkpoint event duration sec",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_database_neo4j_check_point_duration",
+   "metric_names": [
+    "neo4j_database_neo4j_check_point_duration"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_check_point_duration",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_duration"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Neo4j Log Rotation",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_neo4j_log_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_neo4j_log_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_log_rotation_duration",
+    "neo4j_database_neo4j_log_rotation_events_total",
+    "neo4j_database_neo4j_log_rotation_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Last Committed Transaction ID",
+   "panel_type": "stat",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_last_closed_tx_id_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_closed_tx_id_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed Transaction Speed",
+   "panel_type": "gauge",
+   "ref_id": "A",
+   "expr": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Rolled back Transaction Speed",
+   "panel_type": "gauge",
+   "ref_id": "A",
+   "expr": "irate(neo4j_database_neo4j_transaction_rollbacks_total[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_rollbacks_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_rollbacks_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_rollbacks_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Active Transactions",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "neo4j_database_neo4j_transaction_active_read",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_active_read"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_read",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_read"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Active Transactions",
+   "panel_type": "timeseries",
+   "ref_id": "D",
+   "expr": "neo4j_neo4j_transaction_active_write",
+   "metric_names": [
+    "neo4j_neo4j_transaction_active_write"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_write",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_write"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Active Transactions",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_peak_concurrent_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_peak_concurrent_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_peak_concurrent_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_peak_concurrent_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Last Committed Write Transaction ID",
+   "panel_type": "stat",
+   "ref_id": "A",
+   "expr": "neo4j_database_neo4j_transaction_last_committed_tx_id_total",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_committed_tx_id_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "rate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "irate(neo4j_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Transactions",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_database_neo4j_transaction_(started|committed|rollbacks|terminated)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_transaction_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_database_neo4j_transaction_(started|committed|rollbacks|terminated)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total",
+    "neo4j_database_neo4j_transaction_rollbacks_total",
+    "neo4j_database_neo4j_transaction_started_total",
+    "neo4j_database_neo4j_transaction_terminated_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed Read Transaction Rate",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "rate(neo4j_database_neo4j_transaction_committed_read_total[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_read_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed transactions",
+   "panel_type": "timeseries",
+   "ref_id": "A",
+   "expr": "neo4j_database_neo4j_transaction_committed_total",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed transactions",
+   "panel_type": "timeseries",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_transaction_committed_read_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_read_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed transactions",
+   "panel_type": "timeseries",
+   "ref_id": "C",
+   "expr": "neo4j_neo4j_transaction_committed_write_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_write_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 2,
+   "panel": "Committed Write Transaction Rate",
+   "panel_type": "timeseries",
+   "ref_id": "D",
+   "expr": "rate(neo4j_database_neo4j_transaction_committed_write_total[$interval])",
+   "metric_names": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_write_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": true,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Neo4j Status",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "up{job=\"neo4j-prometheus\"}",
+   "metric_names": [
+    "up"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "up{job=\"neo4j-prometheus\"}",
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "not-a-neo4j-metric"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Relationship creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_neo4j_ids_in_use_relationship[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Property creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_neo4j_ids_in_use_property[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_property[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Node creation speed (ids)",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_neo4j_ids_in_use_node[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Counters of Graph Items",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_neo4j_ids_in_use_(node|property|relationship)\"}, \"label\", \"$1\", \"__name__\", \"neo4j_neo4j_ids_in_use_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_neo4j_ids_in_use_(node|property|relationship)"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node",
+    "neo4j_database_neo4j_ids_in_use_property",
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Counters of Graph Items",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_ids_in_use_relationship_type",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_relationship_type"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_ids_in_use_relationship_type",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship_type"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_neo4j_ids_in_use_node[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_node"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_node[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_node"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_neo4j_ids_in_use_relationship[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_relationship"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_relationship"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Graph Items Creation Rate (ids)",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_neo4j_ids_in_use_property[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_ids_in_use_property"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_ids_in_use_property[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_ids_in_use_property"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_bolt_messages_received_total[$interval]) - rate(neo4j_bolt_messages_started_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_received_total",
+    "neo4j_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_received_total[$interval]) - rate(neo4j_dbms_bolt_messages_started_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_messages_(received|started)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_messages_(received|started)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total",
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_messages_received_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_received_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_received_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_received_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Messages Queue",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "rate(neo4j_bolt_messages_started_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_messages_started_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_messages_started_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_started_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Connections",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_connections_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_connections_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_connections_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_connections_closed_total",
+    "neo4j_dbms_bolt_connections_idle",
+    "neo4j_dbms_bolt_connections_opened_total",
+    "neo4j_dbms_bolt_connections_running"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Messages (done vs failed)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_messages_(done|failed)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_messages_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_messages_(done|failed)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_messages_done_total",
+    "neo4j_dbms_bolt_messages_failed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Rate of message queue time",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_bolt_accumulated_queue_time_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_queue_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_queue_time_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_queue_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt rate of message processing time",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_bolt_accumulated_processing_time_total[$interval])",
+   "metric_names": [
+    "neo4j_bolt_accumulated_processing_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_bolt_accumulated_processing_time_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_bolt_accumulated_processing_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Bolt Sessions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_bolt_sessions.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_bolt_sessions_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_bolt_sessions.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [],
+   "verbatim_is_2026_10_form": true,
+   "expect": "stale-name-no-2026-10-equivalent"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Cypher wait time",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_cypher_replan_wait_time_total",
+   "metric_names": [
+    "neo4j_neo4j_cypher_replan_wait_time_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_wait_time_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_wait_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Cypher replan events",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_cypher_replan_events_total",
+   "metric_names": [
+    "neo4j_neo4j_cypher_replan_events_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_cypher_replan_events_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_cypher_replan_events_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_vm_memory_buffer_direct_used",
+   "metric_names": [
+    "neo4j_vm_memory_buffer_direct_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_direct_used",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_direct_used"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "JVM Used Buffer rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_vm_memory_buffer_mapped_used",
+   "metric_names": [
+    "neo4j_vm_memory_buffer_mapped_used"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_memory_buffer_mapped_used",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_buffer_mapped_used"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Live Threads",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_vm_thread_count",
+   "metric_names": [
+    "neo4j_vm_thread_count"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_threads",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_threads"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "{__name__=~\"neo4j_vm_gc_time_g1_.+_generation_total\"}",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_vm_gc_time_g1_.+_generation_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total",
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "delta(neo4j_vm_gc_time_g1_old_generation_total[$interval])",
+   "metric_names": [
+    "neo4j_vm_gc_time_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_old_generation_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "delta(neo4j_vm_gc_time_g1_young_generation_total[$interval])",
+   "metric_names": [
+    "neo4j_vm_gc_time_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "delta(neo4j_dbms_vm_gc_time_g1_young_generation_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_time_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "vm_gc_count_g1_old_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_old_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_old_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_old_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "VM Garbage Collector",
+   "panel_type": "graph",
+   "ref_id": "E",
+   "expr": "vm_gc_count_g1_young_generation_total",
+   "metric_names": [
+    "vm_gc_count_g1_young_generation_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_vm_gc_count_g1_young_generation_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_gc_count_g1_young_generation_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "JVM Heap Size",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "sum({__name__=~\"neo4j_vm_memory_pool_g1_(eden|old|survivor).*\"})",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_vm_memory_pool_g1_(eden|old|survivor).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_g1_eden_space",
+    "neo4j_dbms_vm_memory_pool_g1_old_gen",
+    "neo4j_dbms_vm_memory_pool_g1_survivor_space"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "JVM Heap Size",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "sum({__name__=~\"neo4j_vm_memory_pool_(code|compressed|metaspace).*\"}) ",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_vm_memory_pool_(code|compressed|metaspace).*"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_dbms_vm_memory_pool_code_cache",
+    "neo4j_dbms_vm_memory_pool_compressed_class_space",
+    "neo4j_dbms_vm_memory_pool_metaspace"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache faults",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_page_faults_total",
+   "metric_names": [
+    "neo4j_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_page_faults_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache faults/sec",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_page_faults_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_page_faults_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_page_faults_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache evictions rate (evictions/sec)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_evictions_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_evictions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_evictions_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_evictions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache evictions rate (evictions/sec)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_eviction_exceptions_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_eviction_exceptions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_eviction_exceptions_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_eviction_exceptions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache evictions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_evictions_total",
+   "metric_names": [
+    "neo4j_page_cache_evictions_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_evictions_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_evictions_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page Cache Hits",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_page_cache_hits_total",
+   "metric_names": [
+    "neo4j_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hits_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page Cache Hits Rate (hits/sec)",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_page_cache_hits_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_hits_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_hits_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hits_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "rate(neo4j_page_cache_pins_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_pins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_pins_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_pins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache Pins and Unpins rate (pins/sec)",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_page_cache_unpins_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_unpins_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_unpins_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_unpins_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page Cache Hit Ratio",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_page_cache_hit_ratio",
+   "metric_names": [
+    "neo4j_page_cache_hit_ratio"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_hit_ratio",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_hit_ratio"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache flushes",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_page_cache_flushes_total",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_dbms_page_cache_flushes_total",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Page cache flushes rate (flushes/sec)",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_page_cache_flushes_total[$interval])",
+   "metric_names": [
+    "neo4j_page_cache_flushes_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_dbms_page_cache_flushes_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_dbms_page_cache_flushes_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Checkpoints",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_neo4j_check_point_(events|total_time)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_neo4j_check_point_(events|total_time)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_events_total",
+    "neo4j_database_neo4j_check_point_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Checkpoint event duration sec",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_check_point_duration",
+   "metric_names": [
+    "neo4j_neo4j_check_point_duration"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_check_point_duration",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_check_point_duration"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Neo4j Log Rotation",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_neo4j_log_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_neo4j_log_.+"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_log_rotation_duration",
+    "neo4j_database_neo4j_log_rotation_events_total",
+    "neo4j_database_neo4j_log_rotation_total_time_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Last Closed Transaction ID",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_last_closed_tx_id_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_closed_tx_id_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_closed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed Transaction Speed",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Rolled back Transaction Speed",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "irate(neo4j_neo4j_transaction_rollbacks_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_rollbacks_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_rollbacks_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_rollbacks_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_neo4j_transaction_active_read",
+   "metric_names": [
+    "neo4j_neo4j_transaction_active_read"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_read",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_read"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "neo4j_neo4j_transaction_active_write",
+   "metric_names": [
+    "neo4j_neo4j_transaction_active_write"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_active_write",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_active_write"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Active Transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_peak_concurrent_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_peak_concurrent_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_peak_concurrent_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_peak_concurrent_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Last Committed Write Transaction ID",
+   "panel_type": "singlestat",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_last_committed_tx_id_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_last_committed_tx_id_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_last_committed_tx_id_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "rate(neo4j_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "irate(neo4j_neo4j_transaction_committed_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "label_replace({__name__=~\"neo4j_neo4j_transaction_(started|committed|rollbacks|terminated)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_transaction_(.+)\")",
+   "metric_names": [],
+   "name_regexes": [
+    "neo4j_neo4j_transaction_(started|committed|rollbacks|terminated)_total"
+   ],
+   "expr_2026_10_form": null,
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total",
+    "neo4j_database_neo4j_transaction_rollbacks_total",
+    "neo4j_database_neo4j_transaction_started_total",
+    "neo4j_database_neo4j_transaction_terminated_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-only-if-filter-widened"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed Read Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "rate(neo4j_neo4j_transaction_committed_read_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_read_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "A",
+   "expr": "neo4j_neo4j_transaction_committed_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "B",
+   "expr": "neo4j_neo4j_transaction_committed_read_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_read_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_read_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_read_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed transactions",
+   "panel_type": "graph",
+   "ref_id": "C",
+   "expr": "neo4j_neo4j_transaction_committed_write_total",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "neo4j_database_neo4j_transaction_committed_write_total",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  },
+  {
+   "dashboard": 12046,
+   "revision": 1,
+   "panel": "Committed Write Transaction Rate",
+   "panel_type": "graph",
+   "ref_id": "D",
+   "expr": "rate(neo4j_neo4j_transaction_committed_write_total[$interval])",
+   "metric_names": [
+    "neo4j_neo4j_transaction_committed_write_total"
+   ],
+   "name_regexes": [],
+   "expr_2026_10_form": "rate(neo4j_database_neo4j_transaction_committed_write_total[$interval])",
+   "names_2026_10_form": [
+    "neo4j_database_neo4j_transaction_committed_write_total"
+   ],
+   "verbatim_is_2026_10_form": false,
+   "expect": "data-with-default-filter"
+  }
+ ]
+}
