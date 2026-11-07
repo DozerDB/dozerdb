@@ -2,11 +2,13 @@
 import contextlib
 import importlib.util
 import io
+import os
 import pathlib
 import re
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 SCRIPTS = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))  # release-gate.py imports the smoke helper beside it
@@ -221,8 +223,23 @@ def manifest(**switches):
     """The calendar manifest with every check on, except the switches given (underscores for hyphens)."""
     checks = {name: True for name in release_checks.NAMES}
     checks.update({name.replace('_', '-'): value for name, value in switches.items()})
-    return release_line.Manifest('calendar', '2026.10.0', '2026.10.0.0', 'graphstack/dozerdb:2026.10.0.0',
+    return release_line.Manifest('calendar', '2026.10.0', '1.0.0', 'graphstack/dozerdb:2026.10.0-1.0.0', '2026.10',
                                  'dozerdb:calendar-local', '2026.10.0', checks)
+
+
+class HeaderTests(unittest.TestCase):
+    """The gate's first printed line names the release as the server's startup banner does."""
+
+    def test_the_header_names_the_release_from_the_manifest(self):
+        line = gate.header('20261106-120000-abcdef', manifest(), 'dozerdb:calendar-local',
+                           gate.ROOT / '.build/logs/release-gate/20261106-120000-abcdef')
+        self.assertEqual(line, 'Release gate 20261106-120000-abcdef: DozerDB 1.0.0 (Neo4j 2026.10.0), calendar line, '
+                               'image dozerdb:calendar-local, logs in .build/logs/release-gate/20261106-120000-abcdef')
+
+    def test_the_release_name_takes_both_halves_verbatim(self):
+        variant = release_line.Manifest('lts', '5.26.32', '1.2.0', 'graphstack/dozerdb:5.26.32-1.2.0', '5.26',
+                                        'dozerdb:lts-local', '2.13.4', {})
+        self.assertEqual(gate.release_name(variant), 'DozerDB 1.2.0 (Neo4j 5.26.32)')
 
 
 class ImageTests(unittest.TestCase):
@@ -233,15 +250,163 @@ class ImageTests(unittest.TestCase):
 
     def test_the_published_image_of_the_version_after_the_push(self):
         self.assertEqual(gate.image_under_test(manifest(), gate.parse_arguments(['--published'])),
-                         'graphstack/dozerdb:2026.10.0.0')
+                         'graphstack/dozerdb:2026.10.0-1.0.0')
 
     def test_any_image_when_named(self):
-        arguments = gate.parse_arguments(['--image', 'dozerdb:2026.10.0.0-local'])
-        self.assertEqual(gate.image_under_test(manifest(), arguments), 'dozerdb:2026.10.0.0-local')
+        arguments = gate.parse_arguments(['--image', 'dozerdb:2026.10.0-1.0.0-local'])
+        self.assertEqual(gate.image_under_test(manifest(), arguments), 'dozerdb:2026.10.0-1.0.0-local')
 
     def test_published_and_a_named_image_exclude_each_other(self):
         with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
             gate.parse_arguments(['--published', '--image', 'dozerdb:calendar-local'])
+
+
+EXACT = 'sha256:' + 'a' * 64
+OTHER = 'sha256:' + 'b' * 64
+
+
+def lts_manifest():
+    return release_line.Manifest('lts', '5.26.32', '1.0.0', 'graphstack/dozerdb:5.26.32-1.0.0', '5.26',
+                                 'dozerdb:lts-local', '2.13.14', {name: True for name in release_checks.NAMES})
+
+
+class FloatingTagTests(unittest.TestCase):
+    """--published: the floating tags the push moved resolve, through the registry, to the exact image's digest."""
+
+    def check(self, manifest, registry):
+        return gate.floating_tags(manifest.image, manifest.floating_images, registry.get)
+
+    def test_calendar_series_and_latest_with_the_exact_digest_pass(self):
+        row = self.check(manifest(), {'graphstack/dozerdb:2026.10.0-1.0.0': EXACT, 'graphstack/dozerdb:2026.10': EXACT,
+                                      'graphstack/dozerdb:latest': EXACT})
+        self.assertEqual(row.name, 'floating-tags')
+        self.assertEqual(row.outcome.status, 'PASS')
+        self.assertIn('graphstack/dozerdb:2026.10, graphstack/dozerdb:latest = graphstack/dozerdb:2026.10.0-1.0.0',
+                      row.outcome.detail)
+
+    def test_lts_checks_its_series_and_never_latest(self):
+        asked = []
+        registry = {'graphstack/dozerdb:5.26.32-1.0.0': EXACT, 'graphstack/dozerdb:5.26': EXACT,
+                    'graphstack/dozerdb:latest': OTHER}
+        row = gate.floating_tags(lts_manifest().image, lts_manifest().floating_images,
+                                 lambda tag: asked.append(tag) or registry.get(tag))
+        self.assertEqual(row.outcome.status, 'PASS')
+        self.assertEqual(asked, ['graphstack/dozerdb:5.26.32-1.0.0', 'graphstack/dozerdb:5.26'])
+
+    def test_a_floating_tag_with_another_digest_fails_naming_it(self):
+        row = self.check(manifest(), {'graphstack/dozerdb:2026.10.0-1.0.0': EXACT, 'graphstack/dozerdb:2026.10': EXACT,
+                                      'graphstack/dozerdb:latest': OTHER})
+        self.assertEqual(row.outcome, gate.Outcome(
+            'FAIL', f'graphstack/dozerdb:latest is {OTHER}, not {EXACT} of graphstack/dozerdb:2026.10.0-1.0.0'))
+
+    def test_a_missing_floating_tag_fails_naming_it(self):
+        row = self.check(lts_manifest(), {'graphstack/dozerdb:5.26.32-1.0.0': EXACT})
+        self.assertEqual(row.outcome, gate.Outcome('FAIL', 'graphstack/dozerdb:5.26 is not in the registry'))
+
+    def test_a_missing_exact_image_fails_naming_it(self):
+        row = self.check(manifest(), {'graphstack/dozerdb:2026.10': EXACT, 'graphstack/dozerdb:latest': EXACT})
+        self.assertEqual(row.outcome, gate.Outcome('FAIL', 'graphstack/dozerdb:2026.10.0-1.0.0 is not in the registry'))
+
+    def test_an_unreachable_registry_fails_the_row(self):
+        def unreachable(tag):
+            raise OSError('no route to registry-1.docker.io')
+        row = gate.floating_tags(manifest().image, manifest().floating_images, unreachable)
+        self.assertEqual(row.outcome.status, 'FAIL')
+        self.assertIn('no route to registry-1.docker.io', row.outcome.detail)
+
+
+class PublishedRunTests(unittest.TestCase):
+    """Only --published asks the registry, and its floating-tags row comes first in the table."""
+
+    def run_gate(self, *argv):
+        asked = []
+        logs = tempfile.TemporaryDirectory()
+        self.addCleanup(logs.cleanup)
+        stdout = io.StringIO()
+        with mock.patch.object(gate, 'checked_manifest', lambda path: manifest()), \
+                mock.patch.object(gate, 'LOGS', pathlib.Path(logs.name)), \
+                mock.patch.object(gate, 'registry_digest', lambda tag: asked.append(tag) or EXACT), \
+                mock.patch.object(gate, 'run_all', lambda *args, **kwargs: [gate.Row('jars', gate.Outcome('PASS'))]), \
+                mock.patch.object(gate.signal, 'signal'), contextlib.redirect_stdout(stdout):
+            status = gate.main(list(argv))
+        return status, asked, stdout.getvalue()
+
+    def test_published_checks_the_floating_tags_first(self):
+        status, asked, output = self.run_gate('--published')
+        self.assertEqual(status, 0)
+        self.assertEqual(asked, ['graphstack/dozerdb:2026.10.0-1.0.0', 'graphstack/dozerdb:2026.10',
+                                 'graphstack/dozerdb:latest'])
+        table = output[output.index('CHECK'):].splitlines()
+        self.assertTrue(table[1].startswith('floating-tags'), table)
+        self.assertTrue(table[2].startswith('jars'), table)
+
+    def test_a_local_run_never_asks_the_registry(self):
+        status, asked, output = self.run_gate()
+        self.assertEqual(status, 0)
+        self.assertEqual(asked, [])
+        self.assertNotIn('floating-tags', output)
+
+
+class FakeResponse:
+    def __init__(self, body=b'', headers=None):
+        self.body, self.headers = body, headers or {}
+
+    def read(self):
+        return self.body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+class RegistryTests(unittest.TestCase):
+    """The registry seam: an anonymous pull token, then a HEAD request for the tag's manifest."""
+
+    def registry(self, answer):
+        self.requests = []
+
+        def urlopen(request, timeout):
+            self.requests.append(request)
+            if isinstance(request, str):
+                return FakeResponse(b'{"token": "t0k"}')
+            return answer(request)
+        return urlopen
+
+    def test_the_digest_of_a_tag_is_the_registry_content_digest(self):
+        urlopen = self.registry(lambda request: FakeResponse(headers={'Docker-Content-Digest': EXACT}))
+        self.assertEqual(gate.registry_digest('graphstack/dozerdb:2026.10', urlopen), EXACT)
+        token, head = self.requests
+        self.assertIn('scope=repository%3Agraphstack%2Fdozerdb%3Apull', token)
+        self.assertEqual(head.get_method(), 'HEAD')
+        self.assertEqual(head.full_url, 'https://registry-1.docker.io/v2/graphstack/dozerdb/manifests/2026.10')
+        self.assertEqual(head.get_header('Authorization'), 'Bearer t0k')
+        self.assertIn('application/vnd.oci.image.index.v1+json', head.get_header('Accept'))
+
+    def test_a_missing_tag_has_no_digest(self):
+        def missing(request):
+            raise gate.urllib.error.HTTPError(request.full_url, 404, 'Not Found', {}, None)
+        self.assertIsNone(gate.registry_digest('graphstack/dozerdb:nope', self.registry(missing)))
+
+    def test_other_registry_errors_are_raised(self):
+        def refused(request):
+            raise gate.urllib.error.HTTPError(request.full_url, 401, 'Unauthorized', {}, None)
+        with self.assertRaises(gate.urllib.error.HTTPError):
+            gate.registry_digest('graphstack/dozerdb:latest', self.registry(refused))
+
+
+@unittest.skipUnless(os.environ.get('DOZERDB_LIVE_REGISTRY'),
+                     'opt-in: DOZERDB_LIVE_REGISTRY="<exact image> <floating tag>..." compares them on Docker Hub')
+class LiveRegistryTests(unittest.TestCase):
+    """The floating-tags row against the live Docker Hub registry, read-only and anonymous. Run with
+    DOZERDB_LIVE_REGISTRY="graphstack/dozerdb:2026.10.1.0 graphstack/dozerdb:2026.10 graphstack/dozerdb:latest"."""
+
+    def test_the_floating_tags_have_the_exact_image_digest(self):
+        exact, *floating = os.environ['DOZERDB_LIVE_REGISTRY'].split()
+        row = gate.floating_tags(exact, floating, gate.registry_digest)
+        gate.announce(row)
+        self.assertEqual(row.outcome.status, 'PASS', row.outcome.detail)
 
 
 class FakeStack:
@@ -313,7 +478,7 @@ class RunTests(unittest.TestCase):
         recorder = Recorder()
         rows = self.run_gate(manifest(), recorder)
         self.assertEqual(self.statuses(rows), [(name, 'PASS') for name in (
-            'jars', 'smoke-plugin', 'smoke-distribution', 'smoke-docker', 'metrics', 'docker-plugins',
+            'jars', 'smoke-plugin', 'smoke-distribution', 'smoke-docker', 'metrics', 'query-log', 'docker-plugins',
             'stack', 'stack-metrics', 'cypher-flow', 'browser-flow')])
         self.assertTrue(recorder.stacks[0].metrics)
         self.assertTrue(recorder.stacks[0].closed)
@@ -333,6 +498,15 @@ class RunTests(unittest.TestCase):
         self.assertEqual(recorder.contexts['smoke-docker'],
                          release_checks.Context(image='dozerdb:calendar-local', gds_version='2026.10.0'))
         self.assertEqual(recorder.contexts['cypher-flow'], recorder.stacks[0].context)
+
+    def test_the_query_log_check_tests_the_image_on_every_form_and_prints_a_result_line(self):
+        recorder = Recorder()
+        self.run_gate(manifest(), recorder)
+        check = release_checks.CHECKS[release_checks.NAMES.index('query-log')]
+        self.assertEqual(check.command(recorder.contexts['query-log'])[1:],
+                         ['scripts/query-log-check.py', '--image', 'dozerdb:calendar-local'])
+        self.assertTrue(check.result_line)
+        self.assertFalse(check.stack)
 
     def test_the_plugin_check_expects_the_open_gds_version_of_the_line(self):
         recorder = Recorder()
@@ -377,7 +551,7 @@ class RunTests(unittest.TestCase):
 
     def test_a_skip_names_the_manifest_that_disabled_the_check(self):
         recorder = Recorder()
-        variant = release_line.Manifest('lts', '5.26.32', '5.26.32.0', 'graphstack/dozerdb:5.26.32.0',
+        variant = release_line.Manifest('lts', '5.26.32', '1.0.0', 'graphstack/dozerdb:5.26.32-1.0.0', '5.26',
                                         'dozerdb:lts-local', '2.13.14', manifest(metrics=False).checks,
                                         source='lts-dry-run.toml')
         rows = self.run_gate(variant, recorder)
@@ -429,7 +603,7 @@ class RunTests(unittest.TestCase):
         recorder = Recorder()
         rows = self.run_gate(manifest(), recorder, start_error=FileNotFoundError(2, 'No such file', 'docker'))
         self.assertEqual(gate.failed(rows), ['stack', 'stack-metrics', 'cypher-flow', 'browser-flow'])
-        self.assertEqual(rows[6].outcome.detail, "crashed: FileNotFoundError: [Errno 2] No such file: 'docker'")
+        self.assertEqual(rows[7].outcome.detail, "crashed: FileNotFoundError: [Errno 2] No such file: 'docker'")
         self.assertTrue(recorder.stacks[0].closed)
 
     def test_a_stack_that_cannot_even_be_set_up_fails_its_checks(self):
@@ -437,7 +611,7 @@ class RunTests(unittest.TestCase):
             raise OSError('no free port')
         rows = gate.run_all(manifest(), 'dozerdb:calendar-local', Recorder().execute, opener)
         self.assertEqual(gate.failed(rows), ['stack', 'stack-metrics', 'cypher-flow', 'browser-flow'])
-        self.assertEqual(rows[6].outcome.detail, 'crashed: OSError: no free port')
+        self.assertEqual(rows[7].outcome.detail, 'crashed: OSError: no free port')
 
     def test_a_teardown_that_crashes_is_a_failed_row(self):
         recorder = Recorder()
@@ -453,7 +627,7 @@ class RunTests(unittest.TestCase):
         recorder = Recorder()
         seen = []
         self.run_gate(manifest(), recorder, hold=lambda rows, stack: seen.append((len(rows), stack.closed)))
-        self.assertEqual(seen, [(10, False)])
+        self.assertEqual(seen, [(11, False)])
         self.assertTrue(recorder.stacks[0].closed)
 
 

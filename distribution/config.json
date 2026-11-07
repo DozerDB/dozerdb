@@ -3,10 +3,8 @@
   "tag": "5.26.32",
   "commit": "27f24499b751708815d42c8cf26bfb6597b3516c",
   "neo4jVersion": "5.26.32",
-  "coreVersion": "5.26.32-1.1.0",
-  "metricsVersion": "5.26.32-1.1.0",
-  "browserVersion": "5.26.32.1",
-  "distributionVersion": "5.26.32.1",
+  "dozerdbVersion": "1.2.0",
+  "distributionVersion": "5.26.32-1.2.0",
   "patch": "patches/5.26.32.patch",
   "snapshotOccurrences": 170,
   "pluginTestArchive": {

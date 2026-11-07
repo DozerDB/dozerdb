@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.dozerdb.client</groupId>
   <artifactId>dozerdb-browser</artifactId>
-  <version>5.26.32.1</version>
+  <version>5.26.32-1.2.0</version>
   <name>Neo4j - Browser</name>
   <description>Graph database client.</description>
   <url>https://github.com/neo4j/neo4j</url>
@@ -142,13 +142,4 @@
       </plugin>
     </plugins>
   </build>
-  <distributionManagement>
-    <repository>
-      <id>releases@repo.neo4j.org</id>
-      <uniqueVersion>true</uniqueVersion>
-      <name>Neo4j Releases</name>
-      <url>http://m2.neo4j.org/content/repositories/releases/</url>
-      <layout>default</layout>
-    </repository>
-  </distributionManagement>
 </project>

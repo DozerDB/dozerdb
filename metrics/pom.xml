@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.dozerdb</groupId>
     <artifactId>dozerdb-core-parent</artifactId>
-    <version>5.26.32-1.1.0</version>
+    <version>5.26.32-1.2.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>dozerdb-metrics</artifactId>
-  <version>5.26.32-1.1.0</version>
+  <version>5.26.32-1.2.0</version>
   <packaging>jar</packaging>
 
   <name>DozerDB Metrics</name>

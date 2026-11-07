@@ -4,7 +4,7 @@
 inventory and the settings declaration. Change those sources and run the script; do not edit the blocks. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB `5.26.32.<revision>`, built on Neo4j `5.26.32`.
+This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.32` (`5.26.32-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
 This page collects every place where DozerDB's metrics differ from what the Neo4j

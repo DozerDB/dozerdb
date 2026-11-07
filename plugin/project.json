@@ -5,6 +5,8 @@
   "implicitDependencies": [
     "core",
     "metrics",
+    "procedures",
+    "query-log",
     "browser"
   ],
   "targets": {
@@ -20,6 +22,8 @@
           "projects": [
             "core",
             "metrics",
+            "procedures",
+            "query-log",
             "browser"
           ],
           "target": "build"

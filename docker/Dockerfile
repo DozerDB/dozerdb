@@ -3,7 +3,7 @@
 FROM debian:trixie-slim
 ENV JAVA_HOME=/opt/java/openjdk
 COPY --from=eclipse-temurin:21 $JAVA_HOME $JAVA_HOME
-ARG NEO4J_TARBALL=dozerdb-5.26.32.1-unix.tar.gz
+ARG NEO4J_TARBALL=dozerdb-5.26.32-1.2.0-unix.tar.gz
 # NEO4J_EDITION stays community: the entrypoint's remaining edition-gated paths are the cluster advertised
 # addresses, which do not apply to DozerDB. DozerDB's metrics are not edition-gated, so the entrypoint prepares
 # /metrics (below) unconditionally.

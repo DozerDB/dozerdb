@@ -211,7 +211,7 @@ class RenderingTests(unittest.TestCase):
         self.assertEqual(metrics_docs.render_version('2026.10', '2026.10.0'),
                          'This page tracks the Neo4j Operations Manual **2026.10** '
                          '([monitoring](https://neo4j.com/docs/operations-manual/2026.10/monitoring/)) for the DozerDB '
-                         '**2026.10** release line: DozerDB `2026.10.0.<revision>`, built on Neo4j `2026.10.0`.\n')
+                         '**2026.10** release line: DozerDB releases built on Neo4j `2026.10.0` (`2026.10.0-<dozerdb-version>`).\n')
 
     def test_matrix_rows_carry_type_scope_tier_filter_note_and_the_neo4j_link(self):
         matrix = metrics_docs.render_matrix(self.entries(), ['*bolt.connections*', '*ids_in_use*'])

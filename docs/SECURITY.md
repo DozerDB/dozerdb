@@ -4,7 +4,8 @@
 
 Security fixes are released for the current calendar release on `main` and for
 the current long-term-support line (`lts/5.26`). Each fix is published as a new
-DozerDB revision of the affected release.
+DozerDB PATCH release of the affected line: `5.26.32-1.2.1` after
+`5.26.32-1.2.0`.
 
 ## Reporting a vulnerability
 
@@ -15,4 +16,5 @@ DozerDB version, how you run it and the steps to reproduce.
 
 You will receive an acknowledgement, and a fix or mitigation is coordinated with
 you before any public disclosure. Vulnerabilities in Neo4j itself should be
-reported to Neo4j; DozerDB picks up the fixed Neo4j release in its next revision.
+reported to Neo4j; DozerDB picks up the fixed Neo4j release in its next release,
+named after the new Neo4j tag.

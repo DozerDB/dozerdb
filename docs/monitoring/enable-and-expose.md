@@ -5,7 +5,7 @@ inventory and the settings declaration. Change those sources and run the script;
 settings table is checked against the declaration by the same script. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB `5.26.32.<revision>`, built on Neo4j `5.26.32`.
+This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.32` (`5.26.32-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
 Neo4j's pages [Enable metrics logging](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/enable/)

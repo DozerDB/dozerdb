@@ -1,0 +1,49 @@
+{
+  "name": "query-log",
+  "root": "query-log",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/maven.sh -pl query-log -am install -DskipTests",
+        "cwd": "."
+      },
+      "outputs": [
+        "{projectRoot}/target"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "scripts/maven.sh -pl query-log -am verify",
+        "cwd": "."
+      },
+      "outputs": [
+        "{projectRoot}/target/surefire-reports",
+        "{projectRoot}/target/failsafe-reports"
+      ],
+      "dependsOn": [
+        "docs-check"
+      ]
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/query-log-docs.py",
+        "cwd": "."
+      }
+    },
+    "docs-check": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "python3 scripts/query-log-docs.py --check",
+        "cwd": "."
+      }
+    }
+  }
+}

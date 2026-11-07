@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Query log without an immediate flush
+
+    A whole server-logs.xml for the overhead measurement (scripts/query-log-overhead.py, configuration "no-flush"):
+    installed as conf/server-logs.xml of a packaged DozerDB in place of Neo4j's shipped file, so it also routes the
+    debug, HTTP and security logs the way that file does. The QueryLog appender keeps the shipped file's name,
+    pattern, 20 MB rotation and seven kept files; the mitigation is the difference marked below. Written by DozerDB
+    from Log4j's documentation ("Rolling file appenders", "Appenders"); not a copy of Neo4j's file. The
+    maintainer's overhead record gives the operator recommendation: the lines to change in a shipped file.
+-->
+<Configuration status="ERROR">
+    <Appenders>
+        <RollingRandomAccessFile name="DebugLog" fileName="${config:server.directories.logs}/debug.log"
+                                 filePattern="$${config:server.directories.logs}/debug.log.%02i">
+            <JsonTemplateLayout eventTemplateUri="classpath:org/neo4j/logging/StructuredLayoutWithMessage.json"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="HttpLog" fileName="${config:server.directories.logs}/http.log"
+                                 filePattern="$${config:server.directories.logs}/http.log.%02i">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="SecurityLog" fileName="${config:server.directories.logs}/security.log"
+                                 filePattern="$${config:server.directories.logs}/security.log.%02i">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+        </RollingRandomAccessFile>
+
+        <!-- The mitigation: immediateFlush="false". The appender hands its 8 KiB buffer to the operating system when
+             the buffer fills instead of after every entry; the entries still in the buffer when the JVM dies are
+             lost. -->
+        <RollingRandomAccessFile name="QueryLog" fileName="${config:server.directories.logs}/query.log"
+                                 filePattern="$${config:server.directories.logs}/query.log.%02i" immediateFlush="false">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSSZ}{GMT+0} %-5p %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="DebugLog"/>
+        </Root>
+        <Logger name="QueryLogger" level="INFO" additivity="false">
+            <AppenderRef ref="QueryLog"/>
+        </Logger>
+        <Logger name="HttpLogger" level="INFO" additivity="false">
+            <AppenderRef ref="HttpLog"/>
+        </Logger>
+        <Logger name="SecurityLogger" level="INFO" additivity="false">
+            <AppenderRef ref="SecurityLog"/>
+        </Logger>
+    </Loggers>
+</Configuration>

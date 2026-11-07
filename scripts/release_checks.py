@@ -65,6 +65,9 @@ CHECKS = (
           lambda c: [PYTHON, 'scripts/smoke.py', 'docker', '--image', c.image], False, 900),
     Check('metrics', 'scripts/metrics-check.py --image IMAGE: every delivery form with a real Prometheus',
           lambda c: [PYTHON, 'scripts/metrics-check.py', '--image', c.image], True, 1800),
+    Check('query-log', 'scripts/query-log-check.py --image IMAGE: the query log on every delivery form, its entries '
+          'matched against the field inventory',
+          lambda c: [PYTHON, 'scripts/query-log-check.py', '--image', c.image], True, 1800),
     Check('docker-plugins', 'scripts/docker-plugins.py --image IMAGE --gds-version GDS: APOC and Open GDS from '
           'NEO4J_PLUGINS, GDS at the manifest\'s gds_version',
           lambda c: [PYTHON, 'scripts/docker-plugins.py', '--image', c.image, '--gds-version', c.gds_version], True,

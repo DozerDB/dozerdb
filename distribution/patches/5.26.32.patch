@@ -5,7 +5,7 @@
                  <configuration>
                      <attach>false</attach>
 -                    <finalName>neo4j-community-${project.version}</finalName>
-+                    <finalName>dozerdb-${project.version}.1</finalName>
++                    <finalName>dozerdb-5.26.32-1.2.0</finalName>
                      <appendAssemblyId>true</appendAssemblyId>
                      <outputDirectory>${project.parent.build.directory}</outputDirectory>
                      <delimiters>
@@ -18,12 +18,12 @@
 +        <dependency>
 +            <groupId>org.dozerdb</groupId>
 +            <artifactId>dozerdb-core</artifactId>
-+            <version>5.26.32-1.1.0</version>
++            <version>5.26.32-1.2.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.dozerdb.client</groupId>
 +            <artifactId>dozerdb-browser</artifactId>
-+            <version>5.26.32.1</version>
++            <version>5.26.32-1.2.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>io.prometheus</groupId>
@@ -39,7 +39,7 @@
  fi
  
 +# Bootstrap DozerDB before the upstream server implementation.
-+CLASSPATH="$BASEDIR/lib/dozerdb-core-5.26.32-1.1.0.jar:$CLASSPATH"
++CLASSPATH="$BASEDIR/lib/dozerdb-core-5.26.32-1.2.0.jar:$CLASSPATH"
 +
  exec "$JAVACMD" @EXTRA_JVM_ARGUMENTS@ \
    -classpath "$CLASSPATH" \

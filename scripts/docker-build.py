@@ -2,11 +2,20 @@
 """Build the DozerDB image from the assembled archive using a minimal context.
 
 By default the image is loaded into the local Docker engine under the two local
-tags of the line manifest (release-line.toml): dozerdb:<version>-local, the exact
-build, and its local_image, the latest build of the line (dozerdb:calendar-local
-or dozerdb:lts-local). --tag replaces them. With --push the image is built for
-every requested platform and pushed under each --tag instead (a multi-platform
-build cannot be loaded locally)."""
+tags of the line manifest (release-line.toml): dozerdb:<distribution version>-local,
+the exact build, and its local_image, the latest build of the line (dozerdb:calendar-local
+or dozerdb:lts-local). --tag replaces them for a local build.
+
+With --push the image is built for every requested platform and pushed (a
+multi-platform build cannot be loaded locally) under the tags the manifest derives,
+never tags typed by the operator (--tag is rejected with --push):
+  - image, the exact release (graphstack/dozerdb:2026.10.1-1.2.0);
+  - <repository>:<docker_series>, the latest release of the Neo4j series
+    (graphstack/dozerdb:2026.10, graphstack/dozerdb:5.26);
+  - <repository>:latest, only when the manifest's line is calendar.
+An LTS line therefore never moves latest or a calendar series tag. After the push,
+scripts/release-gate.py --published checks that every floating tag has the exact
+image's digest."""
 import argparse
 import hashlib
 from pathlib import Path
@@ -22,16 +31,28 @@ def local_tags(manifest_path, config):
     manifest = release_line.required_manifest(manifest_path, config)
     return [manifest.local_build_image, manifest.local_image]
 
+def pushed_tags(manifest_path, config):
+    """The tags of a push, from the line manifest: the exact image, the Docker series and, on calendar, latest."""
+    return release_line.required_manifest(manifest_path, config).published_images
+
 def parse_args(argv=None, manifest_path=release_line.MANIFEST, config=None):
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--platform', help='Buildx target platform(s), e.g. linux/amd64 or linux/amd64,linux/arm64')
     parser.add_argument('--tag', action='append',
-                        help="image tag; repeatable (default: dozerdb:<version>-local and the manifest's local_image)")
-    parser.add_argument('--push', action='store_true', help='push the tags to their registry instead of loading locally')
+                        help="local image tag; repeatable (default: dozerdb:<distribution version>-local and the "
+                             "manifest's local_image); not allowed with --push")
+    parser.add_argument('--push', action='store_true',
+                        help="push to the registry under the tags derived from the manifest (image, "
+                             "<repository>:<docker_series>, and <repository>:latest on the calendar line) "
+                             "instead of loading locally")
     args = parser.parse_args(argv)
-    if args.push and not args.tag:
-        parser.error('--push needs at least one explicit --tag')
-    args.tag = args.tag or local_tags(manifest_path, config)
+    if args.push and args.tag:
+        parser.error('--push takes its tags from the line manifest (image, <repository>:<docker_series> and, on the '
+                     'calendar line, <repository>:latest); remove --tag ' + ' '.join(args.tag))
+    if args.push:
+        args.tag = pushed_tags(manifest_path, config)
+    else:
+        args.tag = args.tag or local_tags(manifest_path, config)
     return args
 
 def build_command(args, name):
@@ -46,7 +67,7 @@ def build_command(args, name):
 def main():
     config = release_line.read_config()
     args = parse_args(config=config)
-    name = f'dozerdb-{config["distributionVersion"]}-unix.tar.gz'
+    name = f'dozerdb-{release_line.pinned_version(config)}-unix.tar.gz'
     archive = ROOT / 'distribution/target' / name
     checksum = archive.with_name(name+'.sha256')
     expected = checksum.read_text().strip().split()

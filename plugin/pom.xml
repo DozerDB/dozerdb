@@ -7,7 +7,7 @@
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-plugin</artifactId>
-  <version>5.26.32.1</version>
+  <version>5.26.32-1.2.0</version>
   <packaging>jar</packaging>
   <name>dozerdb-plugin</name>
   <description>DozerDB Plugin for Neo4j Community.  This project builds the plugin using the proper dozerdb-core and dozerdb-browser versions.</description>
@@ -49,10 +49,13 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
-    <!-- The dozer-db plugin version does not have to match the dozerdb-core version number because updates to the dozerdb-browser may cause a version bump. -->
-    <dozerdb-browser.version>5.26.32.1</dozerdb-browser.version>
-    <dozerdb-core.version>5.26.32-1.1.0</dozerdb-core.version>
-    <dozerdb-metrics.version>5.26.32-1.1.0</dozerdb-metrics.version>
+    <!-- Every DozerDB artifact, the plugin included, carries the distribution version <Neo4j tag>-<DozerDB version>;
+         scripts/distribution.py checks these properties and the POM version against distribution/config.json. -->
+    <dozerdb-browser.version>5.26.32-1.2.0</dozerdb-browser.version>
+    <dozerdb-core.version>5.26.32-1.2.0</dozerdb-core.version>
+    <dozerdb-metrics.version>5.26.32-1.2.0</dozerdb-metrics.version>
+    <dozerdb-procedures.version>5.26.32-1.2.0</dozerdb-procedures.version>
+    <dozerdb-query-log.version>5.26.32-1.2.0</dozerdb-query-log.version>
   </properties>
 
 
@@ -89,6 +92,8 @@
                 <includes>
                   <include>org.dozerdb:dozerdb-core</include>
                   <include>org.dozerdb:dozerdb-metrics</include>
+                  <include>org.dozerdb:dozerdb-procedures</include>
+                  <include>org.dozerdb:dozerdb-query-log</include>
                   <include>org.dozerdb.client:dozerdb-browser</include>
                 </includes>
               </artifactSet>
@@ -112,9 +117,28 @@
                     <exclude>LICENSE.txt</exclude>
                   </excludes>
                 </filter>
+                <filter>
+                  <artifact>org.dozerdb:dozerdb-procedures</artifact>
+                  <excludes>
+                    <exclude>META-INF/README.md</exclude>
+                    <exclude>META-INF/PublicApi.txt</exclude>
+                    <exclude>META-INF/LICENSE.txt</exclude>
+                    <exclude>LICENSE.txt</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.dozerdb:dozerdb-query-log</artifact>
+                  <excludes>
+                    <exclude>META-INF/README.md</exclude>
+                    <exclude>META-INF/PublicApi.txt</exclude>
+                    <exclude>META-INF/LICENSE.txt</exclude>
+                    <exclude>LICENSE.txt</exclude>
+                  </excludes>
+                </filter>
               </filters>
               <transformers>
-                <!-- Core and metrics both declare org.neo4j.configuration.SettingsDeclaration providers. -->
+                <!-- Core and metrics both declare org.neo4j.configuration.SettingsDeclaration providers; metrics, the
+                     procedures and the query log all declare org.neo4j.kernel.extension.ExtensionFactory providers. -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
             </configuration>
@@ -138,6 +162,16 @@
       <groupId>org.dozerdb</groupId>
       <artifactId>dozerdb-metrics</artifactId>
       <version>${dozerdb-metrics.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-procedures</artifactId>
+      <version>${dozerdb-procedures.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-query-log</artifactId>
+      <version>${dozerdb-query-log.version}</version>
     </dependency>
     <dependency>
       <groupId>org.dozerdb.client</groupId>

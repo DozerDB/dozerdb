@@ -1,9 +1,10 @@
 # Building DozerDB
 
 The repository holds every component of a release: `core` (the Neo4j
-integration), `metrics` (the metrics settings, collectors and exporters), `browser`
-(DozerDB Browser), `plugin` (the shaded plugin JAR), `distribution` (the standalone
-archives) and `docker`. Each keeps its native
+integration), `metrics` (the metrics settings, collectors and exporters),
+`procedures` (the administration procedures Neo4j reserves for Enterprise),
+`query-log` (Neo4j-compatible query logging), `browser` (DozerDB Browser), `plugin`
+(the shaded plugin JAR), `distribution` (the standalone archives) and `docker`. Each keeps its native
 build tool; Nx orchestrates the hand-offs between them.
 
 ## Toolchain
@@ -57,26 +58,30 @@ python3 scripts/docker-build.py
 ```
 
 `distribution/config.json` pins the Neo4j tag and commit the release is built
-on, the component versions and the packaging patch. `scripts/distribution.py`
+on, the DozerDB version (the distribution version `<neo4j-tag>-<dozerdb-version>`
+is derived from the two) and the packaging patch. `scripts/distribution.py`
 exports that exact upstream commit (cloning it into `.build/neo4j-git`, or
 reading an existing Neo4j clone named by `NEO4J_SOURCE_REPOSITORY`), applies the
 patch, runs Neo4j's own standalone assembly with DozerDB's core and Browser, adds
-the metrics JAR to `lib/` and `DOZERDB-NOTICE.txt` (the third-party notice for the
-libraries DozerDB adds) to both archives, and leaves the release bundle in
+the metrics, procedures and query-log JARs to `lib/` and `DOZERDB-NOTICE.txt` (the third-party
+notice for the libraries DozerDB adds) to both archives, and leaves the release bundle in
 `distribution/target/`:
 
 | File | Content |
 | --- | --- |
-| `dozerdb-<version>-unix.tar.gz` | Standalone server for Linux and macOS |
-| `dozerdb-<version>-windows.zip` | Standalone server for Windows (checked statically) |
-| `dozerdb-plugin-<version>.jar` | Shaded core, metrics and Browser for a stock Neo4j `lib/` |
+| `dozerdb-<distribution version>-unix.tar.gz` | Standalone server for Linux and macOS |
+| `dozerdb-<distribution version>-windows.zip` | Standalone server for Windows (checked statically) |
+| `dozerdb-plugin-<distribution version>.jar` | Shaded core, metrics, procedures, query log and Browser for a stock Neo4j `lib/` |
 
 Each file has a `.sha256` sidecar. `scripts/docker-build.py` builds the image
-from the Unix archive and tags it `dozerdb:<version>-local` and with the
+from the Unix archive and tags it `dozerdb:<distribution version>-local` and with the
 `local_image` of `release-line.toml`, the latest local build of the release line
 (`dozerdb:calendar-local` or `dozerdb:lts-local`); the Docker smoke test uses that
-tag. `--platform`, repeatable `--tag` and `--push` produce multi-platform images
-for a registry.
+tag. `--platform` and `--push` produce multi-platform images for a registry,
+tagged from `release-line.toml` and never by hand: the exact `image` and the
+`docker_series` tag, `graphstack/dozerdb:2026.10` on the calendar line and
+`graphstack/dozerdb:5.26` on the LTS line. Only the calendar line also tags
+`latest`.
 
 ## Test and verify
 
