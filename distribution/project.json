@@ -5,6 +5,8 @@
   "implicitDependencies": [
     "core",
     "metrics",
+    "procedures",
+    "query-log",
     "browser",
     "plugin"
   ],
@@ -17,6 +19,8 @@
           "projects": [
             "core",
             "metrics",
+            "procedures",
+            "query-log",
             "browser",
             "plugin"
           ],

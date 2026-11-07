@@ -30,7 +30,8 @@ import {
   DrawerSectionBody,
   DrawerSubHeader
 } from 'browser-components/drawer/drawer-styled'
-import { version as browserVersion } from 'project-root/package.json'
+import { version as distributionVersion } from 'project-root/package.json'
+import { describeDozerdbRelease } from './dozerdbRelease'
 import { getEdition, getRawVersion } from 'shared/modules/dbMeta/dbMetaDuck'
 import { copyToClipboard } from 'neo4j-arc/common'
 import { GlobalState } from 'shared/globalState'
@@ -49,6 +50,7 @@ function asChangeLogUrl(serverVersion: string): string | undefined {
 interface AboutProps {
   serverVersion: string | null
   serverEdition: string | null
+  packageVersion?: string
 }
 
 // Injected by webpack
@@ -56,7 +58,11 @@ declare const __GIT_HASH__: string | undefined
 declare const __BUILD_NUMBER__: string | undefined
 declare const __BUILT_AT__: string | undefined
 
-const About = ({ serverVersion, serverEdition }: AboutProps) => (
+export const About = ({
+  serverVersion,
+  serverEdition,
+  packageVersion = distributionVersion
+}: AboutProps) => (
   <Drawer id="db-about">
     <DrawerHeader>About Neo4j</DrawerHeader>
     <DrawerBody>
@@ -83,11 +89,10 @@ const About = ({ serverVersion, serverEdition }: AboutProps) => (
         <DrawerSubHeader>You are running</DrawerSubHeader>
         <DrawerSectionBody>
           <p>
-            DozerDB Browser version:{' '}
             <DrawerExternalLink
-              href={`https://github.com/DozerDB/dozerdb/releases/tag/${browserVersion}`}
+              href={describeDozerdbRelease(packageVersion).releaseUrl}
             >
-              {browserVersion}
+              {describeDozerdbRelease(packageVersion).label}
             </DrawerExternalLink>
           </p>
           {serverVersion && serverEdition && (

@@ -21,7 +21,10 @@ Each check's output goes to .build/logs/release-gate/<run id>/<check>.log (the s
 container logs to stack.log), the table to report.txt there. Exit status 0 and `RESULT PASS` mean every
 enabled check passed; `RESULT FAIL (...)` names the failed ones. The image under test is the manifest's
 local_image, the line's latest local build (scripts/docker-build.py tags it); --published tests the manifest's
-image, the pushed tag of the version, and --image any other. --hold leaves the stack running after the checks
+image, the pushed tag of the version, and --image any other. --published also checks the floating tags the push
+moved (the manifest's Docker series and, on the calendar line, latest; scripts/docker-build.py derives them): its
+first row, floating-tags, resolves each through the Docker Hub registry and fails, naming the tag, unless it has
+the exact image's digest. --hold leaves the stack running after the checks
 until Ctrl-C, for the Browser, Prometheus and Graphite by hand.
 
 There is no option for the release version: the version under test is the checkout's, the manifest's
@@ -41,6 +44,7 @@ import subprocess
 import sys
 import time
 import traceback
+import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
@@ -355,6 +359,57 @@ def http_json(url, payload=None, headers=None):
         return json.loads(response.read())
 
 
+# The manifest media types a tag can resolve to; the registry answers with the digest of the one it stores.
+MANIFEST_TYPES = ', '.join((
+    'application/vnd.oci.image.index.v1+json', 'application/vnd.docker.distribution.manifest.list.v2+json',
+    'application/vnd.oci.image.manifest.v1+json', 'application/vnd.docker.distribution.manifest.v2+json'))
+DOCKER_HUB_TOKEN = 'https://auth.docker.io/token'
+DOCKER_HUB = 'https://registry-1.docker.io'
+
+
+def registry_digest(image, urlopen=urllib.request.urlopen):
+    """The digest a Docker Hub tag (<repository>:<tag>) resolves to, or None when the registry has no such tag.
+    Anonymous and read-only: a pull token, then a HEAD request for the tag's manifest."""
+    repository, _, tag = image.rpartition(':')
+    if '/' not in repository:
+        repository = f'library/{repository}'
+    query = urllib.parse.urlencode({'service': 'registry.docker.io', 'scope': f'repository:{repository}:pull'})
+    with urlopen(f'{DOCKER_HUB_TOKEN}?{query}', timeout=30) as response:
+        token = json.loads(response.read())['token']
+    request = urllib.request.Request(f'{DOCKER_HUB}/v2/{repository}/manifests/{tag}', method='HEAD',
+                                     headers={'Authorization': f'Bearer {token}', 'Accept': MANIFEST_TYPES})
+    try:
+        with urlopen(request, timeout=30) as response:
+            return response.headers['Docker-Content-Digest']
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise
+
+
+def floating_tags(image, floating, digest_of):
+    """The floating-tags row: every floating tag must resolve to the digest of the exact image. digest_of(tag)
+    returns a tag's digest from the registry, or None when the tag is missing."""
+    started = time.monotonic()
+    try:
+        exact = digest_of(image)
+        if exact is None:
+            problems = [f'{image} is not in the registry']
+        else:
+            problems = []
+            for tag in floating:
+                digest = digest_of(tag)
+                if digest is None:
+                    problems.append(f'{tag} is not in the registry')
+                elif digest != exact:
+                    problems.append(f'{tag} is {digest}, not {exact} of {image}')
+        outcome = (Outcome('FAIL', '; '.join(problems)) if problems else
+                   Outcome('PASS', f'{", ".join(floating)} = {image} ({exact})'))
+    except Exception as exc:
+        outcome = crashed(exc)
+    return Row('floating-tags', outcome, time.monotonic() - started)
+
+
 class Stack:
     """The checked-in stack as one Compose project of this run. Nothing starts before start()."""
 
@@ -466,6 +521,17 @@ def parse_arguments(argv):
     return parser.parse_args(argv)
 
 
+def release_name(manifest):
+    """The release under test as the server's startup banner names it (the smoke check's banner): DozerDB
+    <dozerdb_version> (Neo4j <neo4j_tag>)."""
+    return smoke.banner(manifest.distribution_version)
+
+
+def header(run, manifest, image, logs):
+    """The gate's first line: run id, the release under test, its line, the image and where the logs go."""
+    return f'Release gate {run}: {release_name(manifest)}, {manifest.line} line, image {image}, logs in {shown(logs)}'
+
+
 def image_under_test(manifest, args):
     """The line's latest local build unless --published or --image names another image."""
     return args.image or (manifest.image if args.published else manifest.local_image)
@@ -485,10 +551,13 @@ def main(argv=None):
     run = run_id(time.time(), uuid.uuid4().hex[:6])
     logs = LOGS / run
     logs.mkdir(parents=True)
-    print(f'Release gate {run}: {manifest.line} line, Neo4j {manifest.neo4j_tag}, DozerDB {manifest.dozerdb_version}, '
-          f'image {image}, logs in {shown(logs)}', flush=True)
-    rows = run_all(manifest, image, lambda check, context: execute(check, context, logs),
-                   lambda metrics: Stack(run, image, metrics, logs), hold=hold if args.hold else None)
+    print(header(run, manifest, image, logs), flush=True)
+    rows = []
+    if args.published:
+        rows.append(floating_tags(manifest.image, manifest.floating_images, registry_digest))
+        announce(rows[0])
+    rows += run_all(manifest, image, lambda check, context: execute(check, context, logs),
+                    lambda metrics: Stack(run, image, metrics, logs), hold=hold if args.hold else None)
     table = report(rows)
     (logs / 'report.txt').write_text(table + '\n')
     print(table, flush=True)

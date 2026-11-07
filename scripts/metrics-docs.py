@@ -14,12 +14,14 @@ the Operations Manual names the manual version the inventory tracks.
 
 Only the inventory's public columns are read. The `notes` column is maintainer text and is never read here.
 """
-import argparse
 import dataclasses
 import json
 import pathlib
 import re
 import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from generated_blocks import SHARED_PAGE_BLOCKS, foreign_blocks, check_pages, main as generator_main, update_page, write_pages  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 INVENTORY = ROOT / 'metrics/src/main/resources/org/dozerdb/metrics/inventory/metrics-inventory.tsv'
@@ -291,7 +293,7 @@ def render_version(manual, neo4j_version):
     line = '.'.join(neo4j_version.split('.')[:2])
     return (f'This page tracks the Neo4j Operations Manual **{manual}** '
             f'([monitoring]({MANUAL_ROOT.format(version=manual)})) for the DozerDB **{line}** release line: '
-            f'DozerDB `{neo4j_version}.<revision>`, built on Neo4j `{neo4j_version}`.\n')
+            f'DozerDB releases built on Neo4j `{neo4j_version}` (`{neo4j_version}-<dozerdb-version>`).\n')
 
 
 def render_tier_summary(entries):
@@ -349,24 +351,15 @@ def render_default_filter(patterns):
 # Pages ----------------------------------------------------------------------------------------------------------
 
 PAGES = {
-    'README.md': ('version', 'tier-summary'),
+    'README.md': SHARED_PAGE_BLOCKS['metrics'],
     'enable-and-expose.md': ('version', 'default-filter'),
     'compatibility-matrix.md': ('version', 'matrix'),
     'differences.md': ('version', 'differences'),
 }
 SETTINGS_PAGE = 'enable-and-expose.md'
-BLOCK = re.compile(r'(<!-- BEGIN GENERATED: ([a-z-]+) -->\n)(.*?)(<!-- END GENERATED: \2 -->)', re.DOTALL)
+# The query log generator's block on the monitoring README, left as it is.
+FOREIGN = foreign_blocks('metrics')
 SETTING_ROW = re.compile(r'^\|\s*`(server\.[a-z_.]+)`\s*\|([^|]*)\|', re.MULTILINE)
-
-
-def update_page(text, blocks):
-    """The page with each generated block's content replaced; every block must be there, and no other."""
-    found = [m.group(2) for m in BLOCK.finditer(text)]
-    missing = sorted(set(blocks) - set(found))
-    unknown = sorted(set(found) - set(blocks))
-    if missing or unknown or len(found) != len(set(found)):
-        raise ValueError(f'generated blocks: missing {missing}, unknown {unknown}, found {found}')
-    return BLOCK.sub(lambda m: m.group(1) + blocks[m.group(2)] + m.group(4), text)
 
 
 def shown_default(text):
@@ -431,51 +424,21 @@ def check(root=ROOT):
     """Every reason the committed pages are stale; empty when they are current."""
     directory = docs_directory(root)
     blocks, declared, manual = generated_blocks(root)
-    problems = []
-    for page, page_blocks in blocks.items():
-        path = directory / page
-        text = path.read_text(encoding='utf-8')
-        problems += [f'{path.relative_to(root)}: {p}' for p in manual_link_problems(text, manual)]
-        try:
-            if update_page(text, page_blocks) != text:
-                problems.append(f'{path.relative_to(root)}: generated blocks are stale')
-        except ValueError as error:
-            problems.append(f'{path.relative_to(root)}: {error}')
+    problems = check_pages(directory, blocks, root, also=lambda text: manual_link_problems(text, manual),
+                           foreign=FOREIGN)
     settings_page = (directory / SETTINGS_PAGE).read_text(encoding='utf-8')
     problems += [f'{SETTINGS_PAGE}: {p}' for p in settings_problems(settings_page, declared)]
     return problems
 
 
 def write(root=ROOT):
-    directory = docs_directory(root)
     blocks, _, _ = generated_blocks(root)
-    for page, page_blocks in blocks.items():
-        path = directory / page
-        text = path.read_text(encoding='utf-8')
-        updated = update_page(text, page_blocks)
-        if updated != text:
-            path.write_text(updated, encoding='utf-8')
-            print(f'updated {path.relative_to(root)}')
+    write_pages(docs_directory(root), blocks, root, foreign=FOREIGN)
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('--check', action='store_true', help='fail when a page is stale instead of rewriting it')
-    args = parser.parse_args(argv)
-    if args.check:
-        problems = check()
-        for problem in problems:
-            print(problem, file=sys.stderr)
-        if problems:
-            print('run python3 scripts/metrics-docs.py to regenerate the monitoring pages', file=sys.stderr)
-            return 1
-        print('monitoring pages are current')
-        return 0
-    write()
-    problems = check()
-    for problem in problems:
-        print(problem, file=sys.stderr)
-    return 1 if problems else 0
+    return generator_main(argv, __doc__.splitlines()[0], check=check, write=write,
+                          script='scripts/metrics-docs.py', pages='monitoring pages')
 
 
 if __name__ == '__main__':

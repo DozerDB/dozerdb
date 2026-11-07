@@ -39,7 +39,7 @@ import { StyledLink } from 'browser-components/buttons'
 import { Alert } from '@neo4j-ndl/react'
 import styled from 'styled-components'
 
-import { version as browserVersion } from 'project-root/package.json'
+import { version as distributionVersion } from 'project-root/package.json'
 
 export const ListItem = styled.li`
   list-style-type: disc;
@@ -490,7 +490,7 @@ const DebugConnectivityFrame = (props: DebugConnectivityFrameProps) => {
               ))}
             </div>
             <pre>
-              <div>Neo4j Browser Version: {browserVersion}</div>
+              <div>DozerDB Browser Version: {distributionVersion}</div>
               <div>User Agent: {navigator?.userAgent}</div>
               <div>Current time: {new Date().toISOString()} </div>
             </pre>

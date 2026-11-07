@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.dozerdb</groupId>
     <artifactId>dozerdb-core-parent</artifactId>
-    <version>2026.10.1-1.1.0</version>
+    <version>2026.10.1-1.2.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>dozerdb-core</artifactId>
-  <version>2026.10.1-1.1.0</version>
+  <version>2026.10.1-1.2.0</version>
   <packaging>jar</packaging>
 
   <name>DozerDB</name>
@@ -196,6 +196,30 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
+      </plugin>
+      <!-- The version resource of the startup banner: the core artifact's version filtered beside DozerDbBootstrapper.
+           An extra execution, because a <resources> list here would replace the Neo4j parent's. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dozerdb-version</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/neo4j/server</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/main/version</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

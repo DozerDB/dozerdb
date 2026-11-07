@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.dozerdb</groupId>
+    <artifactId>dozerdb-core-parent</artifactId>
+    <version>2026.10.1-1.2.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>dozerdb-procedures</artifactId>
+  <version>2026.10.1-1.2.0</version>
+  <packaging>jar</packaging>
+
+  <name>DozerDB Procedures</name>
+  <description>Neo4j-compatible administration procedures that Neo4j Community lacks, beginning with dbms.setConfigValue, registered with the server's procedure registry by a global Neo4j extension.</description>
+
+  <properties>
+    <moduleName>org.dozerdb.procedures</moduleName>
+  </properties>
+
+  <dependencies>
+    <!-- Neo4j is the host: every Neo4j artifact is provided by the server at runtime. The module is pure Java over
+         Neo4j's classes and has no third-party dependency. -->
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>${junit.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-commons</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- The compile-time ServiceProvider annotation that writes the META-INF/services entry of the extension factory. -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>annotations</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- The server's configuration, whose dynamic-by-user path applies a runtime setting change. -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-configuration</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- The extension factory, the procedure registry and the system-procedure marker. -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- The public procedure annotations the procedure class is declared with. -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-procedure-api</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Tests start a real DozerDB in-process through core's test builder (org.neo4j.harness.DozerDbBuilders) and
+         call the procedure over Bolt and through the embedded API. -->
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-core</artifactId>
+      <version>${dozerdb-core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dozerdb</groupId>
+      <artifactId>dozerdb-core</artifactId>
+      <version>${dozerdb-core.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.platform</groupId>
+          <artifactId>junit-platform-engine</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- The Neo4j Java driver (Apache 2.0; version managed by the Neo4j parent) calls the procedure over Bolt in the
+         in-server tests. -->
+    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j.test</groupId>
+      <artifactId>neo4j-harness</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- The Neo4j parent copies README* from the module directory into META-INF of every JAR. The module's README is a
+         maintainer document, not part of the artifact, so the parent's resources are declared again without it. -->
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>COPYRIGHT.txt</include>
+          <include>LICENSE.txt</include>
+          <include>ThirdPartyLicenses.txt</include>
+          <include>CHANGES.txt</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+</project>

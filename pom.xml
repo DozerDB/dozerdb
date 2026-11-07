@@ -10,7 +10,7 @@
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-core-parent</artifactId>
-  <version>2026.10.1-1.1.0</version>
+  <version>2026.10.1-1.2.0</version>
   <packaging>pom</packaging>
   <name>dozerdb-core-parent</name>
   <description>DozerDB Plugin Core for Neo4j</description>
@@ -37,6 +37,8 @@
   <modules>
     <module>core</module>
     <module>metrics</module>
+    <module>procedures</module>
+    <module>query-log</module>
     <module>plugin</module>
   </modules>
 
@@ -53,8 +55,9 @@
     <!-- Upstream fails on unused/undeclared dependencies; DozerDB declares the Neo4j modules it bootstraps. -->
     <dependency.analyze.failOnWarning>false</dependency.analyze.failOnWarning>
 
-    <!-- We define the dozerdb-core.version here because we want to keep the main project version the same as the parent neo4j project version. -->
-    <dozerdb-core.version>2026.10.1-1.1.0</dozerdb-core.version>
+    <!-- Every DozerDB artifact carries the distribution version <Neo4j tag>-<DozerDB version>;
+         scripts/distribution.py checks this property and every POM version against distribution/config.json. -->
+    <dozerdb-core.version>2026.10.1-1.2.0</dozerdb-core.version>
     <java.version>21</java.version>
     <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
     <maven.compiler.release>21</maven.compiler.release>

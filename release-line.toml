@@ -1,14 +1,18 @@
 # The release line this branch builds, read by scripts/release-gate.py. Every release branch keeps its own
 # copy; the gate and the stack are identical on every line, and this file says what differs.
 #
-# neo4j_tag and dozerdb_version restate the pins in distribution/config.json (tag, distributionVersion);
-# the gate fails when they disagree, so update them together.
+# neo4j_tag and dozerdb_version restate the pins in distribution/config.json (tag, dozerdbVersion), the two inputs
+# that name a release: its distribution version is <neo4j_tag>-<dozerdb_version>. The gate fails when they
+# disagree, so update them together.
 line = "calendar"                         # calendar (main) or lts (an lts/<series> branch)
 neo4j_tag = "2026.10.1"
-dozerdb_version = "2026.10.1.0"
-image = "graphstack/dozerdb:2026.10.1.0"  # the published image of this version; the gate tests it with --published
+dozerdb_version = "1.2.0"                 # DozerDB's own MAJOR.MINOR.PATCH; a Neo4j upgrade alone never moves it
+image = "graphstack/dozerdb:2026.10.1-1.2.0"  # the published image of this release, tagged with the distribution version; the gate tests it with --published
+# The floating Neo4j major.minor tag this line moves on publication (the calendar line also moves latest); declared,
+# never parsed from neo4j_tag.
+docker_series = "2026.10"
 # The latest local build of this line, the image the gate and the check scripts test by default. Every local build
-# (scripts/docker-build.py) is tagged with it and with dozerdb:<dozerdb_version>-local, so the builds of the
+# (scripts/docker-build.py) is tagged with it and with dozerdb:<distribution version>-local, so the builds of the
 # calendar and LTS lines sit side by side on one machine.
 local_image = "dozerdb:calendar-local"
 # The Open GDS version the image installs from NEO4J_PLUGINS for this Neo4j version, as registered in
@@ -23,6 +27,7 @@ smoke-plugin = true         # scripts/smoke.py plugin
 smoke-distribution = true   # scripts/smoke.py distribution
 smoke-docker = true         # scripts/smoke.py docker
 metrics = true              # scripts/metrics-check.py: every delivery form with a real Prometheus
+query-log = true            # scripts/query-log-check.py: the query log on every delivery form against the field inventory
 docker-plugins = true       # scripts/docker-plugins.py: APOC and Open GDS (at gds_version) from NEO4J_PLUGINS
 stack-metrics = true        # the stack's Prometheus scrapes DozerDB and its Graphite receives from it
 cypher-flow = true          # scripts/cypher-flow.py against the stack's DozerDB

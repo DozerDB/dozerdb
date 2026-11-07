@@ -47,6 +47,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
+from probes import Probes
 import release_line
 import smoke
 
@@ -353,24 +354,6 @@ class GraphiteListener:
     def close(self):
         self.closed = True
         self.socket.close()
-
-
-class Probes:
-    """Runs named probes of one form, printing PASS or FAIL for each and keeping the failures."""
-
-    def __init__(self, form):
-        self.form = form
-        self.failures = []
-
-    def run(self, name, check):
-        try:
-            print(f'PASS {self.form} {name}: {check()}', flush=True)
-            return True
-        except Exception as exc:  # a probe's failure of any kind is reported; the other probes still run
-            message = str(exc).strip().replace('\n', '; ') or type(exc).__name__
-            print(f'FAIL {self.form} {name}: {message}', flush=True)
-            self.failures.append(f'{self.form} {name}')
-            return False
 
 
 def generate_load(server):
