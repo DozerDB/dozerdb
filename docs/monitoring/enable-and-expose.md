@@ -5,11 +5,11 @@ inventory and the settings declaration. Change those sources and run the script;
 settings table is checked against the declaration by the same script. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.32` (`5.26.32-<dozerdb-version>`).
+This page tracks the Neo4j Operations Manual **5** (*Monitoring* page) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.33` (`5.26.33-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
-Neo4j's pages [Enable metrics logging](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/enable/)
-and [Expose metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/expose/)
+Neo4j's pages *Enable metrics logging* (Operations Manual 5)
+and *Expose metrics* (Operations Manual 5)
 apply to DozerDB as written, apart from their Neo4j Ops Manager parts. Metrics are on
 by default: with no metrics setting at all, DozerDB writes CSV files and registers JMX
 MBeans for the metrics the default filter enables, exactly as Neo4j does. Prometheus
@@ -19,7 +19,7 @@ and Graphite are off until you enable them.
 
 DozerDB declares every `server.metrics.*` setting and `server.directories.metrics`
 with the name, default, type and validation of Neo4j's
-[configuration settings reference](https://neo4j.com/docs/operations-manual/5/configuration/configuration-settings/).
+*configuration settings reference* (Operations Manual 5).
 An invalid value stops the server at startup with Neo4j's usual settings error; a
 valid one never does ([why](differences.md#a-metrics-failure-never-stops-the-server)).
 

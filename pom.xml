@@ -8,22 +8,22 @@
   <parent>
     <groupId>org.neo4j</groupId>
     <artifactId>parent</artifactId>
-    <version>5.26.32</version>
+    <version>5.26.33</version>
   </parent>
 
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-core-parent</artifactId>
-  <version>5.26.32-1.2.0</version>
+  <version>5.26.33-1.2.1</version>
   <packaging>pom</packaging>
   <name>dozerdb-core-parent</name>
   <description>DozerDB Plugin Core for Neo4j</description>
   <properties>
-    <neo4j.version>5.26.32</neo4j.version>
+    <neo4j.version>5.26.33</neo4j.version>
 
     <!-- Every DozerDB artifact carries the distribution version <Neo4j tag>-<DozerDB version>;
          scripts/distribution.py checks this property and every POM version against distribution/config.json. -->
-    <dozerdb-core.version>5.26.32-1.2.0</dozerdb-core.version>
+    <dozerdb-core.version>5.26.33-1.2.1</dozerdb-core.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
     <maven.compiler.source>17</maven.compiler.source>

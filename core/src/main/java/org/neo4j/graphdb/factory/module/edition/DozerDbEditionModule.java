@@ -388,6 +388,7 @@ public class DozerDbEditionModule extends AbstractEditionModule implements Defau
                 globalModule.getOtherMemoryPool().getPoolMemoryTracker());
 
         systemGraphComponentsBuilder.register(communityComponent);
+        globalModule.getGlobalDependencies().satisfyDependency(communityComponent);
     }
 
     /** {@inheritDoc} */

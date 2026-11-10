@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.dozerdb</groupId>
     <artifactId>dozerdb-core-parent</artifactId>
-    <version>5.26.32-1.2.0</version>
+    <version>5.26.33-1.2.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
 
   <artifactId>dozerdb-core</artifactId>
-  <version>5.26.32-1.2.0</version>
+  <version>5.26.33-1.2.1</version>
 
   <name>DozerDB</name>
   <description>Enhances Neo4j Community (AKA Core) with enterprise features.</description>

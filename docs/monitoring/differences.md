@@ -4,7 +4,7 @@
 inventory and the settings declaration. Change those sources and run the script; do not edit the blocks. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **5** ([monitoring](https://neo4j.com/docs/operations-manual/5/monitoring/)) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.32` (`5.26.32-<dozerdb-version>`).
+This page tracks the Neo4j Operations Manual **5** (*Monitoring* page) for the DozerDB **5.26** release line: DozerDB releases built on Neo4j `5.26.33` (`5.26.33-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
 This page collects every place where DozerDB's metrics differ from what the Neo4j
@@ -142,108 +142,108 @@ Emitted with the documented name and type, but the value differs from Neo4j, sta
 
 **Dropwizard default reservoir; distribution semantics not established against Enterprise.**
 
-- `<prefix>.dbms.bolt.worker_thread_bound_time` ([Bolt metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#bolt-metrics))
-- `<prefix>.database.<db>.db.query.execution.latency.millis` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
-- `<prefix>.database.<db>.db.query.execution.slotted.latency.millis` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
-- `<prefix>.database.<db>.transaction.tx_size_heap` ([Database transaction metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-tx-metrics))
-- `<prefix>.database.<db>.transaction.tx_size_native` ([Database transaction metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-tx-metrics))
+- `<prefix>.dbms.bolt.worker_thread_bound_time` (Operations Manual 5, *Metrics reference*, Bolt metrics)
+- `<prefix>.database.<db>.db.query.execution.latency.millis` (Operations Manual 5, *Metrics reference*, Query execution metrics)
+- `<prefix>.database.<db>.db.query.execution.slotted.latency.millis` (Operations Manual 5, *Metrics reference*, Query execution metrics)
+- `<prefix>.database.<db>.transaction.tx_size_heap` (Operations Manual 5, *Metrics reference*, Database transaction metrics)
+- `<prefix>.database.<db>.transaction.tx_size_native` (Operations Manual 5, *Metrics reference*, Database transaction metrics)
 
 **Counts only with the internal setting `internal.server.bolt.response_metrics=true`, which installs Neo4j's response metrics listener; 0 under default settings.**
 
-- `<prefix>.dbms.bolt.response_success` ([Bolt metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#bolt-metrics))
-- `<prefix>.dbms.bolt.response_ignored` ([Bolt metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#bolt-metrics))
+- `<prefix>.dbms.bolt.response_success` (Operations Manual 5, *Metrics reference*, Bolt metrics)
+- `<prefix>.dbms.bolt.response_ignored` (Operations Manual 5, *Metrics reference*, Bolt metrics)
 
 **Counts only with the internal setting `internal.server.bolt.response_metrics=true`, which installs Neo4j's response metrics listener; 0 under default settings; one counter over every error code.**
 
-- `<prefix>.dbms.bolt.response_failed` ([Bolt metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#bolt-metrics))
+- `<prefix>.dbms.bolt.response_failed` (Operations Manual 5, *Metrics reference*, Bolt metrics)
 
 **Neo4j recompiles with expression code generation only in the executable query cache, so this cache's counter stays zero; no event can move it, so the measured behaviour is unproven.**
 
-- `<prefix>.database.<db>.cypher_cache_ast_compiled_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_execution_plan_compiled_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_logical_plan_compiled_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_preparser_compiled_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
+- `<prefix>.database.<db>.cypher_cache_ast_compiled_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_execution_plan_compiled_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_logical_plan_compiled_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_preparser_compiled_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
 
 **Neo4j checks staleness only in the executable query and logical plan caches, so this cache's counter stays zero; no event can move it, so the measured behaviour is unproven.**
 
-- `<prefix>.database.<db>.cypher_cache_ast_stale_entries_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_execution_plan_stale_entries_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_preparser_stale_entries_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
+- `<prefix>.database.<db>.cypher_cache_ast_stale_entries_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_execution_plan_stale_entries_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_preparser_stale_entries_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
 
 **Counts only with the internal setting `internal.cypher.enable_runtime_monitors=true`, which attaches Neo4j's execution plan cache tracer; 0 under default settings.**
 
-- `<prefix>.database.<db>.cypher_cache_execution_plan_cache_flushes_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_execution_plan_discards_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_execution_plan_hits_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
-- `<prefix>.database.<db>.cypher_cache_execution_plan_misses_total` ([Cypher metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#cypher-metrics))
+- `<prefix>.database.<db>.cypher_cache_execution_plan_cache_flushes_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_execution_plan_discards_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_execution_plan_hits_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
+- `<prefix>.database.<db>.cypher_cache_execution_plan_misses_total` (Operations Manual 5, *Metrics reference*, Cypher metrics)
 
 **Reads the checkpoint IO limiter's limit and pauses of the last checkpoint; Community has no IO limiter, so the value stays zero.**
 
-- `<prefix>.database.<db>.check_point.limit_millis` ([Database checkpointing metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#checkpointing-metrics))
-- `<prefix>.database.<db>.check_point.limit_times` ([Database checkpointing metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#checkpointing-metrics))
-- `<prefix>.database.<db>.check_point.io_limit` ([Database checkpointing metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#checkpointing-metrics))
+- `<prefix>.database.<db>.check_point.limit_millis` (Operations Manual 5, *Metrics reference*, Database checkpointing metrics)
+- `<prefix>.database.<db>.check_point.limit_times` (Operations Manual 5, *Metrics reference*, Database checkpointing metrics)
+- `<prefix>.database.<db>.check_point.io_limit` (Operations Manual 5, *Metrics reference*, Database checkpointing metrics)
 
 **A DROP DATABASE of an online database counts one stop as well as one drop, because Neo4j stops the database before dropping it and announces that stop with the same event as STOP DATABASE; whether Neo4j counts it as a stop is not established.**
 
-- `<prefix>.dbms.db.operation.count.stop` ([Database operation count metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-operation-count-metrics))
+- `<prefix>.dbms.db.operation.count.stop` (Operations Manual 5, *Metrics reference*, Database operation count metrics)
 
 **Counts database panics, the one failure the public database events report; a failed start or stop raises no event and no test provokes a panic, so the measured behaviour is unproven.**
 
-- `<prefix>.dbms.db.operation.count.failed` ([Database operation count metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-operation-count-metrics))
+- `<prefix>.dbms.db.operation.count.failed` (Operations Manual 5, *Metrics reference*, Database operation count metrics)
 
 **Counts the next successful start of a database whose panic was counted as failed; no test provokes a panic, so the measured behaviour is unproven.**
 
-- `<prefix>.dbms.db.operation.count.recovered` ([Database operation count metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-operation-count-metrics))
+- `<prefix>.dbms.db.operation.count.recovered` (Operations Manual 5, *Metrics reference*, Database operation count metrics)
 
 **Reads Neo4j's own failure counter; no test provokes a page cache IO failure, so the measured behaviour is unproven.**
 
-- `<prefix>.dbms.page_cache.eviction_exceptions` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
-- `<prefix>.dbms.page_cache.page_fault_failures` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
+- `<prefix>.dbms.page_cache.eviction_exceptions` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
+- `<prefix>.dbms.page_cache.page_fault_failures` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
 
 **Counts pins of cursors opened with the no-fault flag; Community opens none, so the counter stays zero.**
 
-- `<prefix>.dbms.page_cache.page_cancelled_faults` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
+- `<prefix>.dbms.page_cache.page_cancelled_faults` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
 
 **Counts the page prefetcher's vectored faults; Community's prefetcher is disabled, so the counter stays zero.**
 
-- `<prefix>.dbms.page_cache.page_vectored_faults` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
-- `<prefix>.dbms.page_cache.page_vectored_faults_failures` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
-- `<prefix>.dbms.page_cache.page_no_pin_page_faults` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
+- `<prefix>.dbms.page_cache.page_vectored_faults` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
+- `<prefix>.dbms.page_cache.page_vectored_faults_failures` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
+- `<prefix>.dbms.page_cache.page_no_pin_page_faults` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
 
 **Counts checkpoint IO limiter throttling; Community has no IO limiter, so the counter stays zero.**
 
-- `<prefix>.dbms.page_cache.throttled.times` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
-- `<prefix>.dbms.page_cache.throttled.millis` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
+- `<prefix>.dbms.page_cache.throttled.times` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
+- `<prefix>.dbms.page_cache.throttled.millis` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
 
 **Counts multi-version page copies; Community's stores are single-version, so the counter stays zero.**
 
-- `<prefix>.dbms.page_cache.pages_copied` ([Database page cache metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#db-page-cache-metrics))
+- `<prefix>.dbms.page_cache.pages_copied` (Operations Manual 5, *Metrics reference*, Database page cache metrics)
 
 **Counts queries executed by the parallel runtime; Community has no parallel runtime, so the counter stays zero.**
 
-- `<prefix>.database.<db>.db.query.execution.parallel.success` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
-- `<prefix>.database.<db>.db.query.execution.parallel.failure` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
+- `<prefix>.database.<db>.db.query.execution.parallel.success` (Operations Manual 5, *Metrics reference*, Query execution metrics)
+- `<prefix>.database.<db>.db.query.execution.parallel.failure` (Operations Manual 5, *Metrics reference*, Query execution metrics)
 
 **Dropwizard default reservoir; distribution semantics not established against Enterprise; Community has no parallel runtime, so the histogram stays empty.**
 
-- `<prefix>.database.<db>.db.query.execution.parallel.latency.millis` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
+- `<prefix>.database.<db>.db.query.execution.parallel.latency.millis` (Operations Manual 5, *Metrics reference*, Query execution metrics)
 
 **Counts queries executed by the pipelined runtime; Community has no pipelined runtime, so the counter stays zero.**
 
-- `<prefix>.database.<db>.db.query.execution.pipelined.success` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
-- `<prefix>.database.<db>.db.query.execution.pipelined.failure` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
+- `<prefix>.database.<db>.db.query.execution.pipelined.success` (Operations Manual 5, *Metrics reference*, Query execution metrics)
+- `<prefix>.database.<db>.db.query.execution.pipelined.failure` (Operations Manual 5, *Metrics reference*, Query execution metrics)
 
 **Dropwizard default reservoir; distribution semantics not established against Enterprise; Community has no pipelined runtime, so the histogram stays empty.**
 
-- `<prefix>.database.<db>.db.query.execution.pipelined.latency.millis` ([Query execution metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-execution-metrics))
+- `<prefix>.database.<db>.db.query.execution.pipelined.latency.millis` (Operations Manual 5, *Metrics reference*, Query execution metrics)
 
 **Counts queries routed to another member of the same cluster; DozerDB runs as a single instance, so the counter stays zero.**
 
-- `<prefix>.dbms.routing.query.count.remote_internal` ([Query routing metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-routing-metrics))
+- `<prefix>.dbms.routing.query.count.remote_internal` (Operations Manual 5, *Metrics reference*, Query routing metrics)
 
 **Counts queries routed to a remote database alias; DozerDB has no remote database aliases, so the counter stays zero.**
 
-- `<prefix>.dbms.routing.query.count.remote_external` ([Query routing metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#query-routing-metrics))
+- `<prefix>.dbms.routing.query.count.remote_external` (Operations Manual 5, *Metrics reference*, Query routing metrics)
 
 ### Unsupported (0)
 
@@ -257,70 +257,70 @@ Not emitted because it measures a capability a single-instance server does not h
 
 **Clustering metric; a single-instance server never emits it.**
 
-- `<prefix>.database.<db>.cluster.catchup.tx_pull_requests_received` ([Catch-up metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#catchup-metrics))
-- `<prefix>.database.<db>.cluster.discovery.replicated_data` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.cluster.members` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.cluster.unreachable` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.cluster.converged` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.restart.success_count` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.restart.failed_count` ([Discovery metrics v1](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V1))
-- `<prefix>.database.<db>.cluster.discovery.memberset.reachable` ([Discovery metrics v2](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V2))
-- `<prefix>.database.<db>.cluster.discovery.memberset.unreachable` ([Discovery metrics v2](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#discovery-service-V2))
-- `<prefix>.database.<db>.causal_clustering.core.append_index` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.commit_index` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.applied_index` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.term` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.tx_retries` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.is_leader` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.total_bytes` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.max_bytes` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.element_count` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.max_elements` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.hits` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.misses` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.lag` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.bytes` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.size` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.async_put` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.sync_put` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.message_processing_delay` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.message_processing_timer` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.replication_new` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.replication_attempt` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.replication_fail` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.replication_maybe` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.replication_success` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.causal_clustering.core.last_leader_message` ([Raft core metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-core-metrics))
-- `<prefix>.database.<db>.cluster.raft.append_index` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.commit_index` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.applied_index` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.prune_index` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.term` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.tx_retries` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.is_leader` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.total_bytes` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.max_bytes` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.element_count` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.max_elements` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.hits` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.in_flight_cache.misses` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.lag` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.bytes` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.size` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.async_put` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.sync_put` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.message_processing_delay` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.message_processing_timer` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.replication_new` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.replication_attempt` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.replication_fail` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.replication_maybe` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.replication_success` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.cluster.raft.last_leader_message` ([Raft metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#raft-metrics))
-- `<prefix>.database.<db>.causal_clustering.read_replica.pull_updates` ([Read Replica metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#read-replica-metrics))
-- `<prefix>.database.<db>.causal_clustering.read_replica.pull_update_highest_tx_id_requested` ([Read Replica metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#read-replica-metrics))
-- `<prefix>.database.<db>.causal_clustering.read_replica.pull_update_highest_tx_id_received` ([Read Replica metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#read-replica-metrics))
-- `<prefix>.database.<db>.cluster.store_copy.pull_updates` ([Store copy metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#store-copy-metrics))
-- `<prefix>.database.<db>.cluster.store_copy.pull_update_highest_tx_id_requested` ([Store copy metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#store-copy-metrics))
-- `<prefix>.database.<db>.cluster.store_copy.pull_update_highest_tx_id_received` ([Store copy metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/reference/#store-copy-metrics))
+- `<prefix>.database.<db>.cluster.catchup.tx_pull_requests_received` (Operations Manual 5, *Metrics reference*, Catch-up metrics)
+- `<prefix>.database.<db>.cluster.discovery.replicated_data` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.cluster.members` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.cluster.unreachable` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.cluster.converged` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.restart.success_count` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.restart.failed_count` (Operations Manual 5, *Metrics reference*, Discovery metrics v1)
+- `<prefix>.database.<db>.cluster.discovery.memberset.reachable` (Operations Manual 5, *Metrics reference*, Discovery metrics v2)
+- `<prefix>.database.<db>.cluster.discovery.memberset.unreachable` (Operations Manual 5, *Metrics reference*, Discovery metrics v2)
+- `<prefix>.database.<db>.causal_clustering.core.append_index` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.commit_index` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.applied_index` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.term` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.tx_retries` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.is_leader` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.total_bytes` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.max_bytes` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.element_count` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.max_elements` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.hits` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.in_flight_cache.misses` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.lag` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.bytes` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.size` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.async_put` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.raft_log_entry_prefetch_buffer.sync_put` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.message_processing_delay` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.message_processing_timer` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.replication_new` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.replication_attempt` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.replication_fail` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.replication_maybe` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.replication_success` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.causal_clustering.core.last_leader_message` (Operations Manual 5, *Metrics reference*, Raft core metrics)
+- `<prefix>.database.<db>.cluster.raft.append_index` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.commit_index` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.applied_index` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.prune_index` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.term` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.tx_retries` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.is_leader` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.total_bytes` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.max_bytes` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.element_count` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.max_elements` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.hits` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.in_flight_cache.misses` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.lag` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.bytes` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.size` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.async_put` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.raft_log_entry_prefetch_buffer.sync_put` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.message_processing_delay` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.message_processing_timer` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.replication_new` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.replication_attempt` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.replication_fail` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.replication_maybe` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.replication_success` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.cluster.raft.last_leader_message` (Operations Manual 5, *Metrics reference*, Raft metrics)
+- `<prefix>.database.<db>.causal_clustering.read_replica.pull_updates` (Operations Manual 5, *Metrics reference*, Read Replica metrics)
+- `<prefix>.database.<db>.causal_clustering.read_replica.pull_update_highest_tx_id_requested` (Operations Manual 5, *Metrics reference*, Read Replica metrics)
+- `<prefix>.database.<db>.causal_clustering.read_replica.pull_update_highest_tx_id_received` (Operations Manual 5, *Metrics reference*, Read Replica metrics)
+- `<prefix>.database.<db>.cluster.store_copy.pull_updates` (Operations Manual 5, *Metrics reference*, Store copy metrics)
+- `<prefix>.database.<db>.cluster.store_copy.pull_update_highest_tx_id_requested` (Operations Manual 5, *Metrics reference*, Store copy metrics)
+- `<prefix>.database.<db>.cluster.store_copy.pull_update_highest_tx_id_received` (Operations Manual 5, *Metrics reference*, Store copy metrics)
 <!-- END GENERATED: differences -->

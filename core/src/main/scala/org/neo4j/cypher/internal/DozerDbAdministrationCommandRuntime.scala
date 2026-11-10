@@ -277,7 +277,7 @@ case class DozerDbAdministrationCommandRuntime(
               securityContext.allowsAdminAction(
                 new AdminActionOnResource(
                   ActionMapper.asKernelAction(action),
-                  new DatabaseScope(runtimeStringValue(database, params)),
+                  new DatabaseScope(new NormalizedDatabaseName(runtimeStringValue(database, params)).name()),
                   Segment.ALL
                 )
               )
@@ -383,7 +383,7 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name})
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`})
              | SET database.status = '${DatabaseStatus.Offline.stringValue()}',
              |     database.stopped_at = datetime(),
              |     database.started_at = null,
@@ -391,7 +391,7 @@ case class DozerDbAdministrationCommandRuntime(
              | RETURN database.name as name, database.currentStatus as status
     """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -402,7 +402,8 @@ case class DozerDbAdministrationCommandRuntime(
                   error
                 )
             },
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
       }
 
@@ -421,7 +422,7 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name})
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`})
              | SET database.status = '${DatabaseStatus.Online.stringValue()}',
              |     database.stopped_at = null,
              |     database.started_at = datetime(),
@@ -429,7 +430,7 @@ case class DozerDbAdministrationCommandRuntime(
              | RETURN database.name as name, database.currentStatus as status
     """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -440,7 +441,8 @@ case class DozerDbAdministrationCommandRuntime(
                   error
                 )
             },
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
       }
 
@@ -623,7 +625,7 @@ case class DozerDbAdministrationCommandRuntime(
               securityContext.allowsAdminAction(
                 new AdminActionOnResource(
                   ActionMapper.asKernelAction(action),
-                  new DatabaseScope(runtimeStringValue(databaseName, params)),
+                  new DatabaseScope(new NormalizedDatabaseName(runtimeStringValue(databaseName, params)).name()),
                   Segment.ALL
                 )
               )
@@ -638,7 +640,6 @@ case class DozerDbAdministrationCommandRuntime(
         databaseName: DatabaseName,
         aliasAction: DropDatabaseAliasAction
       ) => (context) =>
-        val valuePropNames: Array[String] = Array("name")
         val nameFields: DatabaseNameFields = getDatabaseNameFields(
           "databaseName",
           databaseName
@@ -650,10 +651,10 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name}) RETURN database.name as name
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`}) RETURN database.name as name
         """.stripMargin,
           VirtualValues.map(
-            valuePropNames,
+            Array(nameFields.nameKey),
             Array(
               nameValue
             )
@@ -670,11 +671,11 @@ case class DozerDbAdministrationCommandRuntime(
               // val nameString = name.asInstanceOf[String].toString()
               Continue
             }),
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
 
     case EnsureValidNonSystemDatabase(source, command, databaseName, action, aliasName) => (context) =>
-        val valuePropNames: Array[String] = Array("name")
         val nameFields: DatabaseNameFields = getDatabaseNameFields(
           "databaseName",
           databaseName
@@ -686,10 +687,10 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name}) RETURN database.name as name
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`}) RETURN database.name as name
         """.stripMargin,
           VirtualValues.map(
-            valuePropNames,
+            Array(nameFields.nameKey),
             Array(
               nameValue
             )
@@ -712,7 +713,8 @@ case class DozerDbAdministrationCommandRuntime(
               }
               Continue
             }),
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
     case EnsureValidNumberOfDatabases(source) => (context) =>
         UpdatingSystemCommandExecutionPlan(

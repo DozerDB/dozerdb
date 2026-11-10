@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# Copyright (c) DozerDB
+# ALL RIGHTS RESERVED.
+#
+# DozerDb is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
 """Test packaged startup and its banner, authentication, databases, constraints, persistence, metrics and the DozerDB procedures."""
 import argparse
 import base64
@@ -368,10 +376,68 @@ def verify(server):
     # The metrics module is active in every delivery form: the heap gauge is readable under Neo4j's JMX object name.
     heap = server.query('CALL dbms.queryJmx("neo4j.metrics:name=neo4j.dbms.vm.heap.used") YIELD attributes RETURN attributes.Value.value')[0]['data']
     assert heap and isinstance(heap[0]['row'][0], int) and heap[0]['row'][0] > 0, f'Heap metric over JMX: {heap}'
-    checks = f'{banner_checks}, heap metric over JMX, CSV metrics directory, ' + verify_set_config_value(server)
+    checks = (f'{banner_checks}, heap metric over JMX, CSV metrics directory, '
+              + verify_set_config_value(server) + ', ' + verify_administration_parameters(server))
     if server.prometheus:
         checks += ', ' + verify_prometheus(server)
     print(f'PASS {server.mode}: authentication, queries, two databases, isolation, existence/uniqueness constraints, restart persistence, customized Browser and notices, {checks}', flush=True)
+
+def parameter_query(server, statement, parameters, username='neo4j', password=PASSWORD):
+    """Execute an administration probe with explicit input parameters and credentials."""
+    payload = {'statements': [{'statement': statement, 'parameters': parameters}]}
+    token = base64.b64encode(f'{username}:{password}'.encode()).decode()
+    request = urllib.request.Request(server.url + '/db/system/tx/commit',
+                                     data=json.dumps(payload).encode(),
+                                     headers={'Content-Type': 'application/json', 'Authorization': 'Basic ' + token})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        result = json.loads(response.read())
+    assert not result['errors'], result['errors']
+    return result['results']
+
+
+def verify_administration_parameters(server):
+    """Exercise parameter conversion and credential updates in every packaged delivery form."""
+    database = {'release`database': 'ParameterProbe'}
+    parameter_query(server, 'CREATE DATABASE $`release``database`', database)
+    for command, status in [('STOP', 'offline'), ('START', 'online')]:
+        parameter_query(server, command + ' DATABASE $`release``database`', database)
+        rows = server.query('SHOW DATABASE parameterprobe YIELD requestedStatus RETURN requestedStatus', 'system')
+        assert rows[0]['data'][0]['row'] == [status], rows
+    parameter_query(server, 'DROP DATABASE $`release``database`', database)
+
+    first, second, third = 'parameter-first-123', 'parameter-second-456', 'parameter-third-789'
+    parameter_query(server, 'CREATE USER parameterprobe SET PASSWORD $`password``value` CHANGE NOT REQUIRED',
+                    {'password`value': first})
+    parameter_query(server, 'ALTER USER parameterprobe SET PASSWORD $`password``value` CHANGE NOT REQUIRED',
+                    {'password`value': second})
+    parameter_query(server, 'ALTER CURRENT USER SET PASSWORD FROM $`old``password` TO $`new``password`',
+                    {'old`password': second, 'new`password': third}, 'parameterprobe', second)
+    rows = parameter_query(server, 'SHOW CURRENT USER YIELD user RETURN user', {}, 'parameterprobe', third)
+    assert rows[0]['data'][0]['row'] == ['parameterprobe'], rows
+    server.query('DROP USER parameterprobe', 'system')
+
+    parameter_query(server, 'CREATE USER parameterunicode SET PASSWORD $`密碼` CHANGE NOT REQUIRED',
+                    {'密碼': first, 'dozerdbParameter_5bc678bc': 'unrelated-value'})
+    rows = parameter_query(server, 'SHOW CURRENT USER YIELD user RETURN user', {}, 'parameterunicode', first)
+    assert rows[0]['data'][0]['row'] == ['parameterunicode'], rows
+    server.query('DROP USER parameterunicode', 'system')
+    server.query("CREATE USER parameterliteral SET PASSWORD 'literal-password-123' CHANGE NOT REQUIRED", 'system')
+    server.query('DROP USER parameterliteral', 'system')
+    sentinel = 'administration_masking_' + uuid.uuid4().hex
+    server.query(f'RETURN 1 AS {sentinel}')
+    deadline = time.monotonic() + 15
+    while True:
+        log = (server.exec('cat', '/logs/query.log') if server.mode == 'docker'
+               else (server.home / 'logs/query.log').read_text())
+        if sentinel in log:
+            break
+        assert time.monotonic() < deadline, 'Administration masking sentinel missing from query.log'
+        time.sleep(0.1)
+    for secret in (first, second, third, 'literal-password-123'):
+        assert secret not in log, 'Administration password leaked into query.log'
+    return ('parameterized database lifecycle, quoted and Unicode credentials, '
+            'current-user password change, password masking')
+
 
 SET_CONFIG_VALUE = {'name': 'dbms.setConfigValue', 'signature': 'dbms.setConfigValue(setting :: STRING, value :: STRING)',
                     'mode': 'DBMS', 'admin': True}
