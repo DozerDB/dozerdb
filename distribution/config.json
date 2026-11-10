@@ -1,16 +1,16 @@
 {
   "repository": "https://github.com/neo4j/neo4j.git",
-  "tag": "2026.10.1",
-  "commit": "2994b43b44f35bf6520bd2667ab181bb76a45585",
-  "neo4jVersion": "2026.10.1",
-  "dozerdbVersion": "1.2.0",
-  "distributionVersion": "2026.10.1-1.2.0",
-  "patch": "patches/2026.10.1.patch",
+  "tag": "2026.10.2",
+  "commit": "11fe55832db7219cbdb9e4535cda9795a069610e",
+  "neo4jVersion": "2026.10.2",
+  "dozerdbVersion": "1.2.1",
+  "distributionVersion": "2026.10.2-1.2.1",
+  "patch": "patches/2026.10.2.patch",
   "snapshotOccurrences": 0,
   "pomVersion": "2026.10.0",
   "pomVersionOccurrences": 182,
   "pluginTestArchive": {
-    "url": "https://dist.neo4j.org/neo4j-community-2026.10.1-unix.tar.gz",
-    "sha256": "afcf4986d47d13dd908427d301d5a9278b2ec7d615a12bb40e22087c7e133e78"
+    "url": "https://dist.neo4j.org/neo4j-community-2026.10.2-unix.tar.gz",
+    "sha256": "fcbccee832175fd8b873ca7d8228dbde4cb5cce43f9053833cc7517dc4dd6f31"
   }
 }

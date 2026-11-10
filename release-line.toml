@@ -5,9 +5,9 @@
 # that name a release: its distribution version is <neo4j_tag>-<dozerdb_version>. The gate fails when they
 # disagree, so update them together.
 line = "calendar"                         # calendar (main) or lts (an lts/<series> branch)
-neo4j_tag = "2026.10.1"
-dozerdb_version = "1.2.0"                 # DozerDB's own MAJOR.MINOR.PATCH; a Neo4j upgrade alone never moves it
-image = "graphstack/dozerdb:2026.10.1-1.2.0"  # the published image of this release, tagged with the distribution version; the gate tests it with --published
+neo4j_tag = "2026.10.2"
+dozerdb_version = "1.2.1"                 # DozerDB's own MAJOR.MINOR.PATCH; a Neo4j upgrade alone never moves it
+image = "graphstack/dozerdb:2026.10.2-1.2.1"  # the published image of this release, tagged with the distribution version; the gate tests it with --published
 # The floating Neo4j major.minor tag this line moves on publication (the calendar line also moves latest); declared,
 # never parsed from neo4j_tag.
 docker_series = "2026.10"
@@ -17,7 +17,7 @@ docker_series = "2026.10"
 local_image = "dozerdb:calendar-local"
 # The Open GDS version the image installs from NEO4J_PLUGINS for this Neo4j version, as registered in
 # https://dist.dozerdb.org/plugins/open-gds/versions.json; the docker-plugins check requires gds.version() to be it.
-gds_version = "2026.10.1"
+gds_version = "2026.10.2"
 
 # Every check the gate runs: true runs it, false reports it as SKIP and does not fail the run.
 # The metrics checks (metrics, stack-metrics) stay false on a line that does not emit metrics yet.

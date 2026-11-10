@@ -31,13 +31,13 @@ The project site is <https://dozerdb.org>.
 
 | Branch | Tracks | Current release |
 | --- | --- | --- |
-| `main` | Neo4j calendar releases (`2026.x`) | `2026.10.1-1.2.0` |
+| `main` | Neo4j calendar releases (`2026.x`) | `2026.10.2-1.2.1` |
 | `lts/5.26` | Neo4j 5.26 long-term support | see the branch |
 
 ## Versioning
 
-A release is named `<neo4j-tag>-<dozerdb-version>`: `2026.10.1-1.2.0` is DozerDB
-`1.2.0` built on Neo4j `2026.10.1`. The name splits at its first hyphen.
+A release is named `<neo4j-tag>-<dozerdb-version>`: `2026.10.2-1.2.1` is DozerDB
+`1.2.1` built on Neo4j `2026.10.2`. The name splits at its first hyphen.
 
 - The first half is the exact Neo4j tag the release is built on. A Neo4j upgrade
   changes only this half; read Neo4j's own release notes for what it changes.
@@ -46,7 +46,7 @@ A release is named `<neo4j-tag>-<dozerdb-version>`: `2026.10.1-1.2.0` is DozerDB
   log formats, the Docker image's environment variables and directories, the
   plugin JAR, the archive layout and DozerDB Browser. MAJOR changes for a
   breaking change to them, MINOR for an addition, PATCH for a fix. The same
-  DozerDB version on two Neo4j tags (`2026.10.1-1.2.0`, `5.26.32-1.2.0`) has the
+  DozerDB version on two Neo4j tags (`2026.10.2-1.2.1`, `5.26.33-1.2.1`) has the
   same DozerDB features.
 
 The one name is the Git tag, the GitHub release, both archives, every DozerDB JAR
@@ -54,7 +54,7 @@ inside them, the plugin JAR and the Docker image. A published release is never
 rebuilt; a correction is a new release. The Docker image is also tagged with its
 Neo4j series (`graphstack/dozerdb:2026.10`, `graphstack/dozerdb:5.26`), which
 follows the latest release of that series, and `graphstack/dozerdb:latest` follows
-the latest calendar release. The server logs `DozerDB 1.2.0 (Neo4j 2026.10.1)` when
+the latest calendar release. The server logs `DozerDB 1.2.1 (Neo4j 2026.10.2)` when
 it starts.
 
 Releases up to `2026.10.1.0` on `main` and `5.26.32.1` on `lts/5.26` were named
@@ -78,7 +78,7 @@ ships three files, each with a `.sha256` checksum:
 docker run --name dozerdb -p 7474:7474 -p 7687:7687 \
   -e NEO4J_AUTH=neo4j/your-password \
   -v "$HOME/dozerdb/data:/data" -v "$HOME/dozerdb/logs:/logs" \
-  graphstack/dozerdb:2026.10.1-1.2.0
+  graphstack/dozerdb:2026.10.2-1.2.1
 ```
 
 The image accepts the same environment variables as the official Neo4j image.
@@ -122,7 +122,7 @@ docker run --name dozerdb -p 7474:7474 -p 7687:7687 -p 2004:2004 \
   -e NEO4J_AUTH=neo4j/your-password \
   -e NEO4J_server_metrics_prometheus_enabled=true \
   -e NEO4J_server_metrics_prometheus_endpoint=0.0.0.0:2004 \
-  graphstack/dozerdb:2026.10.1-1.2.0
+  graphstack/dozerdb:2026.10.2-1.2.1
 curl http://localhost:2004/metrics
 ```
 
@@ -141,7 +141,7 @@ a Java 21 runtime (`JAVA_HOME`). The Windows archive works the same way with
 
 ### Plugin JAR in an existing Neo4j
 
-1. Install Neo4j Community `2026.10.1` (the exact tag of the release).
+1. Install Neo4j Community `2026.10.2` (the exact tag of the release).
 2. Copy `dozerdb-plugin-<version>.jar` into Neo4j's `lib/` directory.
 3. To serve DozerDB Browser, create an empty directory (for example `dozer-web`)
    and set `internal.dbms.web_dir_path=dozer-web` in `neo4j.conf`; Browser

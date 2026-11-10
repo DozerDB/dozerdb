@@ -7,7 +7,7 @@
 
   <groupId>org.dozerdb</groupId>
   <artifactId>dozerdb-plugin</artifactId>
-  <version>2026.10.1-1.2.0</version>
+  <version>2026.10.2-1.2.1</version>
   <packaging>jar</packaging>
   <name>dozerdb-plugin</name>
   <description>DozerDB Plugin for Neo4j Community.  This project builds the plugin using the proper dozerdb-core and dozerdb-browser versions.</description>
@@ -51,11 +51,11 @@
     <maven.build.timestamp.format>yyMMddHHmmssSSS</maven.build.timestamp.format>
     <!-- Every DozerDB artifact, the plugin included, carries the distribution version <Neo4j tag>-<DozerDB version>;
          scripts/distribution.py checks these properties and the POM version against distribution/config.json. -->
-    <dozerdb-browser.version>2026.10.1-1.2.0</dozerdb-browser.version>
-    <dozerdb-core.version>2026.10.1-1.2.0</dozerdb-core.version>
-    <dozerdb-metrics.version>2026.10.1-1.2.0</dozerdb-metrics.version>
-    <dozerdb-procedures.version>2026.10.1-1.2.0</dozerdb-procedures.version>
-    <dozerdb-query-log.version>2026.10.1-1.2.0</dozerdb-query-log.version>
+    <dozerdb-browser.version>2026.10.2-1.2.1</dozerdb-browser.version>
+    <dozerdb-core.version>2026.10.2-1.2.1</dozerdb-core.version>
+    <dozerdb-metrics.version>2026.10.2-1.2.1</dozerdb-metrics.version>
+    <dozerdb-procedures.version>2026.10.2-1.2.1</dozerdb-procedures.version>
+    <dozerdb-query-log.version>2026.10.2-1.2.1</dozerdb-query-log.version>
   </properties>
 
 

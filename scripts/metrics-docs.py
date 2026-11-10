@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
+# Copyright (c) DozerDB
+# ALL RIGHTS RESERVED.
+#
+# DozerDb is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
 """Generate the monitoring documentation from the metric inventory.
 
 The inventory (metrics/src/main/resources/org/dozerdb/metrics/inventory/metrics-inventory.tsv) is the single
 source for the compatibility matrix and the differences page. The monitoring pages are hand-written Markdown with
 generated blocks between `<!-- BEGIN GENERATED: <block> -->` and `<!-- END GENERATED: <block> -->` lines; this
 script rewrites those blocks and leaves everything else as it is. It also checks the settings table of the
-enable-and-expose page against the settings declaration (MetricsSettings.java), and that every link of the pages to
-the Operations Manual names the manual version the inventory tracks.
+enable-and-expose page against the settings declaration (MetricsSettings.java), and that manual references name
+the version the inventory tracks without linking to the upstream site.
 
     python3 scripts/metrics-docs.py           # rewrite the generated blocks
     python3 scripts/metrics-docs.py --check   # exit 1 when a page is stale, the settings table disagrees, or a
-                                              # page links to another manual version
+                                              # page links upstream or names another manual version
 
 Only the inventory's public columns are read. The `notes` column is maintainer text and is never read here.
 """
@@ -239,7 +247,6 @@ TIER_MEANING = {
     'Not applicable': 'Not emitted because it measures a capability a single-instance server does not have '
                       '(clustering).',
 }
-MANUAL_ROOT = 'https://neo4j.com/docs/operations-manual/{version}/monitoring/'
 REASON_ON_DIFFERENCES_PAGE = ('Partial', 'Unsupported')
 SETTING_NAME = re.compile(r'(?<![`\w.])((?:internal|server|dbms|db)\.[a-z0-9_.]*[a-z0-9_](?:=[a-z0-9]+)?)')
 
@@ -263,8 +270,9 @@ def anchor(heading):
     return re.sub(r'[^a-z0-9 _-]', '', heading.lower()).replace(' ', '-')
 
 
-def link(entry):
-    return f'[{entry.section}]({entry.docs_anchor})'
+def manual_reference(entry):
+    version = MANUAL_LINK.match(entry.docs_anchor).group(1)
+    return f'Operations Manual {version}, *Metrics reference*, {entry.section}'
 
 
 def note(entry):
@@ -292,7 +300,7 @@ def sections(entries):
 def render_version(manual, neo4j_version):
     line = '.'.join(neo4j_version.split('.')[:2])
     return (f'This page tracks the Neo4j Operations Manual **{manual}** '
-            f'([monitoring]({MANUAL_ROOT.format(version=manual)})) for the DozerDB **{line}** release line: '
+            f'(*Monitoring* page) for the DozerDB **{line}** release line: '
             f'DozerDB releases built on Neo4j `{neo4j_version}` (`{neo4j_version}-<dozerdb-version>`).\n')
 
 
@@ -323,7 +331,7 @@ def render_matrix(entries, patterns):
             kind = entry.type if entry.unit == '-' else f'{entry.type} ({entry.unit})'
             enabled = default_filter_status(entry, patterns) if entry.emitted else '-'
             lines.append(f'| `{entry.full_name}` | {kind} | {entry.scope} | {entry.tier} | {enabled} | '
-                         f'{cell(note(entry))} | {link(entry)} |')
+                         f'{cell(note(entry))} | {manual_reference(entry)} |')
     return '\n'.join(lines) + '\n'
 
 
@@ -339,7 +347,7 @@ def render_differences(entries):
             by_reason.setdefault(reason_text(entry.reason), []).append(entry)
         for reason, group in by_reason.items():
             lines += [f'**{cell(reason)}**', '']
-            lines += [f'- `{e.full_name}` ({link(e)})' for e in group]
+            lines += [f'- `{e.full_name}` ({manual_reference(e)})' for e in group]
             lines.append('')
     return '\n'.join(lines).rstrip('\n') + '\n'
 
@@ -382,16 +390,14 @@ def settings_problems(page, declared):
 
 
 def manual_link_problems(page, manual):
-    """Every link of a page to an Operations Manual version other than the one the inventory tracks.
-
-    The generated blocks follow the inventory by construction; this catches the hand-written links, which a line
-    upgrade or a page copied from another release line would otherwise leave pointing at the wrong manual.
-    """
+    """Reject upstream links and stale manual versions in public documentation."""
     problems = []
     for number, line in enumerate(page.splitlines(), start=1):
-        for version in MANUAL_LINK.findall(line):
+        if re.search(r'neo4j\.com', line, re.IGNORECASE):
+            problems.append(f'line {number}: use the manual version and page title instead of an upstream link')
+        for version in re.findall(r'Operations Manual (?:\*\*)?([0-9][0-9.]*|current)\b', line):
             if version != manual:
-                problems.append(f'line {number}: links to the Operations Manual {version}, the inventory tracks {manual}')
+                problems.append(f'line {number}: names the Operations Manual {version}, the inventory tracks {manual}')
     return problems
 
 

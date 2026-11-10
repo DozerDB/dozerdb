@@ -6,7 +6,7 @@ blocks. Neo4j's documentation is mentioned by manual version and page title and 
 fails on any link to Neo4j's site in this page. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **2026.10** for the DozerDB **2026.10** release line: DozerDB releases built on Neo4j `2026.10.1` (`2026.10.1-<dozerdb-version>`).
+This page tracks the Neo4j Operations Manual **2026.10** for the DozerDB **2026.10** release line: DozerDB releases built on Neo4j `2026.10.2` (`2026.10.2-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
 Every setting, JSON field and plain-text segment of the query log that the Neo4j

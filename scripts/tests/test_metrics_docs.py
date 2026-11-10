@@ -1,3 +1,11 @@
+# Copyright (c) DozerDB
+# ALL RIGHTS RESERVED.
+#
+# DozerDb is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
 """The monitoring documentation generator, scripts/metrics-docs.py: inventory reading, rendering, and the check that
 the committed pages are current."""
 import importlib.util
@@ -210,14 +218,14 @@ class RenderingTests(unittest.TestCase):
     def test_version_banner_names_the_manual_and_the_release_line(self):
         self.assertEqual(metrics_docs.render_version('2026.10', '2026.10.0'),
                          'This page tracks the Neo4j Operations Manual **2026.10** '
-                         '([monitoring](https://neo4j.com/docs/operations-manual/2026.10/monitoring/)) for the DozerDB '
+                         '(*Monitoring* page) for the DozerDB '
                          '**2026.10** release line: DozerDB releases built on Neo4j `2026.10.0` (`2026.10.0-<dozerdb-version>`).\n')
 
-    def test_matrix_rows_carry_type_scope_tier_filter_note_and_the_neo4j_link(self):
+    def test_matrix_rows_carry_type_scope_tier_filter_note_and_manual_reference(self):
         matrix = metrics_docs.render_matrix(self.entries(), ['*bolt.connections*', '*ids_in_use*'])
         self.assertIn('## Bolt metrics\n', matrix)
         self.assertIn('| `<prefix>.dbms.bolt.connections_opened` | counter | global | Compatible | yes |  | '
-                      f'[Bolt metrics]({REFERENCE}#bolt-metrics) |\n', matrix)
+                      f'Operations Manual 2026.10, *Metrics reference*, Bolt metrics |\n', matrix)
         self.assertIn('| `<prefix>.dbms.bolt.response_success` | counter | global | Partial | no | Neo4j labels it an '
                       'unsupported feature. Counts only with the internal setting `internal.x.y=true`; 0 under default '
                       'settings. | ',
@@ -243,11 +251,11 @@ class RenderingTests(unittest.TestCase):
         unsupported, not_applicable = rest.split('### Not applicable (2)')
         self.assertIn('### Partial (1)', partial)
         self.assertIn('**Counts only with the internal setting `internal.x.y=true`; 0 under default settings.**\n\n'
-                      f'- `<prefix>.dbms.bolt.response_success` ([Bolt metrics]({REFERENCE}#bolt-metrics))\n',
+                      f'- `<prefix>.dbms.bolt.response_success` (Operations Manual 2026.10, *Metrics reference*, Bolt metrics)\n',
                       partial)
         self.assertIn('**Java 21 exposes no count.**', unsupported)
         self.assertEqual(not_applicable.count('**Clustering metric; a single-instance server never emits it.**'), 1)
-        self.assertIn(f'- `<prefix>.database.<db>.cluster.raft.term` ([Raft metrics]({REFERENCE}#raft-metrics))\n'
+        self.assertIn(f'- `<prefix>.database.<db>.cluster.raft.term` (Operations Manual 2026.10, *Metrics reference*, Raft metrics)\n'
                       f'- `<prefix>.database.<db>.cluster.raft.is_leader`', not_applicable)
 
     def test_a_tier_no_metric_has_says_so(self):
@@ -300,23 +308,22 @@ class PageTests(unittest.TestCase):
 
 
 class ManualLinkTests(unittest.TestCase):
-    def test_links_to_the_tracked_manual_are_fine(self):
-        page = ('[Metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/) and '
-                '[settings](https://neo4j.com/docs/operations-manual/5/configuration/configuration-settings/)\n')
+    def test_references_name_the_tracked_manual_without_links(self):
+        page = 'Operations Manual **5**, *Monitoring*\nOperations Manual 5, *Metrics reference*\n'
         self.assertEqual(metrics_docs.manual_link_problems(page, '5'), [])
 
-    def test_a_hand_written_link_to_another_manual_version_is_reported(self):
+    def test_upstream_links_are_rejected_even_for_the_tracked_manual(self):
         page = ('line one\n'
-                'see [Expose](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/expose/)\n'
-                'and [current](https://neo4j.com/docs/operations-manual/current/monitoring/)\n')
+                '[Metrics](https://neo4j.com/docs/operations-manual/5/monitoring/metrics/)\n'
+                'https://neo4j.com/docs/operations-manual/current/monitoring/\n')
         self.assertEqual(metrics_docs.manual_link_problems(page, '5'), [
-            'line 2: links to the Operations Manual 2026.10, the inventory tracks 5',
-            'line 3: links to the Operations Manual current, the inventory tracks 5'])
+            'line 2: use the manual version and page title instead of an upstream link',
+            'line 3: use the manual version and page title instead of an upstream link'])
 
     def test_a_longer_version_with_the_same_start_is_another_version(self):
-        page = 'https://neo4j.com/docs/operations-manual/5.26/monitoring/\n'
+        page = 'Operations Manual **5.26**, *Monitoring*\n'
         self.assertEqual(metrics_docs.manual_link_problems(page, '5'),
-                         ['line 1: links to the Operations Manual 5.26, the inventory tracks 5'])
+                         ['line 1: names the Operations Manual 5.26, the inventory tracks 5'])
 
 
 class CommittedPagesTests(unittest.TestCase):

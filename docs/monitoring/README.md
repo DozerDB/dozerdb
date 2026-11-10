@@ -5,7 +5,7 @@ inventory and the settings declaration, and the query log block by scripts/query
 field inventory. Change those sources and run the scripts; do not edit the blocks. -->
 
 <!-- BEGIN GENERATED: version -->
-This page tracks the Neo4j Operations Manual **2026.10** ([monitoring](https://neo4j.com/docs/operations-manual/2026.10/monitoring/)) for the DozerDB **2026.10** release line: DozerDB releases built on Neo4j `2026.10.1` (`2026.10.1-<dozerdb-version>`).
+This page tracks the Neo4j Operations Manual **2026.10** (*Monitoring* page) for the DozerDB **2026.10** release line: DozerDB releases built on Neo4j `2026.10.2` (`2026.10.2-<dozerdb-version>`).
 <!-- END GENERATED: version -->
 
 DozerDB provides the metrics that the Neo4j Operations Manual documents for Neo4j
@@ -44,12 +44,12 @@ follows it; the descriptions of the metrics are Neo4j's, on Neo4j's pages.
 
 | Neo4j Operations Manual page | Applies to DozerDB |
 | --- | --- |
-| [Metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/) | Yes, except the mention of Neo4j Ops Manager, which DozerDB does not include or support. |
-| [Essential metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/essential/) | Yes, except the Raft leader metric of the cluster health section, which a single server does not have. The node and relationship totals are emitted as `neo4j.count.*`, the reference table's spelling ([details](differences.md#data-count-metric-names)). |
-| [Enable metrics logging](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/enable/) | Yes. |
-| [Expose metrics](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/expose/) | Yes for CSV files, JMX MBeans, Graphite and Prometheus; not the Neo4j Ops Manager section. |
-| [Metrics reference](https://neo4j.com/docs/operations-manual/2026.10/monitoring/metrics/reference/) | Metric by metric, as the [compatibility matrix](compatibility-matrix.md) shows. |
-| [Configuration settings](https://neo4j.com/docs/operations-manual/2026.10/configuration/configuration-settings/), the `server.metrics.*` entries and `server.directories.metrics` | Yes: every one is accepted with Neo4j's default, type and validation ([settings](enable-and-expose.md#settings)). |
+| *Metrics* (Operations Manual 2026.10) | Yes, except the mention of Neo4j Ops Manager, which DozerDB does not include or support. |
+| *Essential metrics* (Operations Manual 2026.10) | Yes, except the Raft leader metric of the cluster health section, which a single server does not have. The node and relationship totals are emitted as `neo4j.count.*`, the reference table's spelling ([details](differences.md#data-count-metric-names)). |
+| *Enable metrics logging* (Operations Manual 2026.10) | Yes. |
+| *Expose metrics* (Operations Manual 2026.10) | Yes for CSV files, JMX MBeans, Graphite and Prometheus; not the Neo4j Ops Manager section. |
+| *Metrics reference* (Operations Manual 2026.10) | Metric by metric, as the [compatibility matrix](compatibility-matrix.md) shows. |
+| *Configuration settings* (Operations Manual 2026.10), the `server.metrics.*` entries and `server.directories.metrics` | Yes: every one is accepted with Neo4j's default, type and validation ([settings](enable-and-expose.md#settings)). |
 | *Query log* under Monitoring › Logging | Yes: the settings, the detail levels, the plain-text line and the JSON fields; the shapes the page leaves open are DozerDB's ([query logging](query-logging.md)). |
 | *Logging* under Monitoring, the *Default logging configuration* section | Yes: `server-logs.xml`, the `QueryLog` appender, the rotation and the JSON layout switch are Neo4j's own and unchanged ([the JSON layout](query-logging.md#the-json-layout)). |
 | *Configuration settings*, the `db.logs.query.*` entries | Yes: every one is accepted with Neo4j's default, type and validation, and changes at runtime through `dbms.setConfigValue` ([settings](query-logging.md#settings)). |

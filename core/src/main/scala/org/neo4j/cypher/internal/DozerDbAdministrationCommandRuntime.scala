@@ -191,9 +191,11 @@ case class DozerDbAdministrationCommandRuntime(
     databaseMode: DatabaseMode
   ): ExecutionPlan = {
     // Either the logical plan is a command that the partial function logicalToExecutable provides/understands OR we throw an error
-    logicalToExecutable.applyOrElse(state.logicalPlan, throwCantCompile).apply(
-      AdministrationCommandRuntimeContext(context)
-    )
+    DozerDbAdministrationParameters.compile(state.logicalPlan) { plan =>
+      logicalToExecutable.applyOrElse(plan, throwCantCompile).apply(
+        AdministrationCommandRuntimeContext(context)
+      )
+    }
   }
 
   // When the community commands are run within enterprise, this allows the enterprise commands to be chained
@@ -605,7 +607,7 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name})
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`})
              | SET database.status = '${DatabaseStatus.Offline.stringValue()}',
              |     database.stopped_at = datetime(),
              |     database.started_at = null,
@@ -613,7 +615,7 @@ case class DozerDbAdministrationCommandRuntime(
              | RETURN database.name as name, database.currentStatus as status
     """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -624,7 +626,8 @@ case class DozerDbAdministrationCommandRuntime(
                   error
                 )
             },
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
       }
 
@@ -640,7 +643,7 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name})
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`})
              | SET database.status = '${DatabaseStatus.Online.stringValue()}',
              |     database.stopped_at = null,
              |     database.started_at = datetime(),
@@ -648,7 +651,7 @@ case class DozerDbAdministrationCommandRuntime(
              | RETURN database.name as name, database.currentStatus as status
     """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -659,7 +662,8 @@ case class DozerDbAdministrationCommandRuntime(
                   error
                 )
             },
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
       }
 
@@ -833,10 +837,10 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name}) RETURN database.name as name
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`}) RETURN database.name as name
         """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -849,7 +853,8 @@ case class DozerDbAdministrationCommandRuntime(
               ))
             )
             .handleResult((_, _, _) => Continue),
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
 
     case EnsureValidNonSystemDatabase(source, _, databaseName, _, _) => context =>
@@ -864,10 +869,10 @@ case class DozerDbAdministrationCommandRuntime(
           normalExecutionEngine,
           securityAuthorizationHandler,
           s"""
-             | MATCH (database:Database {name: $$name}) RETURN database.name as name
+             | MATCH (database:Database {name: $$`${nameFields.nameKey}`}) RETURN database.name as name
         """.stripMargin,
           VirtualValues.map(
-            Array("name"),
+            Array(nameFields.nameKey),
             Array(nameValue)
           ),
           QueryHandler
@@ -890,7 +895,8 @@ case class DozerDbAdministrationCommandRuntime(
               }
               Continue
             }),
-          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context))
+          Some(fullLogicalToExecutable.applyOrElse(source, throwCantCompile).apply(context)),
+          parameterTransformer = ParameterTransformer().convert(nameFields.nameConverter)
         )
 
     case EnsureValidNumberOfDatabases(source) => context =>
